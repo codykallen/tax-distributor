@@ -1,0 +1,15 @@
+year,tau_c,s199_rate,int_fracded,int_dedlimit,div_credrate,nol_cbyears,nol_cfyears,nol_refundrate,nol_inclimit,equip_depr_method1,equip_depr_life1,equip_depr_bonus1,equip_depr_method2,equip_depr_life2,equip_depr_bonus2,equip_depr_method3,equip_depr_life3,equip_depr_bonus3,struc_depr_method1,struc_depr_life1,struc_depr_bonus1,struc_depr_method2,struc_depr_life2,struc_depr_bonus2,struc_depr_method3,struc_depr_life3,struc_depr_bonus3,rentres_depr_method,rentres_depr_life,rentres_depr_bonus,iprd_depr_method,iprd_depr_life,iprd_depr_bonus,iprd_depr_credrate,ipsoft_depr_method,ipsoft_depr_life,ipsoft_depr_bonus,ipart_depr_method,ipart_depr_life,ipart_depr_bonus
+2014,0.35,0.09,1,1,0,2,20,0,1,DB2,5,0.5,DB2,7,0.5,DB2,10,0.5,SL,20,0.5,SL,25,0,SL,39,0,SL,27.5,0,EXP,1,1,0.04,DB2,3,0.5,ECON,1,0
+2015,0.35,0.09,1,1,0,2,20,0,1,DB2,5,0.5,DB2,7,0.5,DB2,10,0.5,SL,20,0.5,SL,25,0,SL,39,0,SL,27.5,0,EXP,1,1,0.04,DB2,3,0.5,ECON,1,0
+2016,0.35,0.09,1,1,0,2,20,0,1,DB2,5,0.5,DB2,7,0.5,DB2,10,0.5,SL,20,0.5,SL,25,0,SL,39,0,SL,27.5,0,EXP,1,1,0.04,DB2,3,0.5,ECON,1,0
+2017,0.35,0.09,1,1,0,2,20,0,1,DB2,5,0.5,DB2,7,0.5,DB2,10,0.5,SL,20,0.5,SL,25,0,SL,39,0,SL,27.5,0,EXP,1,1,0.04,DB2,3,0.5,ECON,1,0
+2018,0.35,0.09,1,1,0,2,20,0,1,DB2,5,0.4,DB2,7,0.4,DB2,10,0.4,SL,20,0.4,SL,25,0,SL,39,0,SL,27.5,0,EXP,1,1,0.04,DB2,3,0.4,ECON,1,0
+2019,0.35,0.09,1,1,0,2,20,0,1,DB2,5,0.3,DB2,7,0.3,DB2,10,0.3,SL,20,0.3,SL,25,0,SL,39,0,SL,27.5,0,EXP,1,1,0.04,DB2,3,0.3,ECON,1,0
+2020,0.35,0.09,1,1,0,2,20,0,1,DB2,5,0,DB2,7,0,DB2,10,0,SL,20,0,SL,25,0,SL,39,0,SL,27.5,0,EXP,1,1,0.04,DB2,3,0,ECON,1,0
+2021,0.35,0.09,1,1,0,2,20,0,1,DB2,5,0,DB2,7,0,DB2,10,0,SL,20,0,SL,25,0,SL,39,0,SL,27.5,0,EXP,1,1,0.04,DB2,3,0,ECON,1,0
+2022,0.35,0.09,1,1,0,2,20,0,1,DB2,5,0,DB2,7,0,DB2,10,0,SL,20,0,SL,25,0,SL,39,0,SL,27.5,0,EXP,1,1,0.04,DB2,3,0,ECON,1,0
+2023,0.35,0.09,1,1,0,2,20,0,1,DB2,5,0,DB2,7,0,DB2,10,0,SL,20,0,SL,25,0,SL,39,0,SL,27.5,0,EXP,1,1,0.04,DB2,3,0,ECON,1,0
+2024,0.35,0.09,1,1,0,2,20,0,1,DB2,5,0,DB2,7,0,DB2,10,0,SL,20,0,SL,25,0,SL,39,0,SL,27.5,0,EXP,1,1,0.04,DB2,3,0,ECON,1,0
+2025,0.35,0.09,1,1,0,2,20,0,1,DB2,5,0,DB2,7,0,DB2,10,0,SL,20,0,SL,25,0,SL,39,0,SL,27.5,0,EXP,1,1,0.04,DB2,3,0,ECON,1,0
+2026,0.35,0.09,1,1,0,2,20,0,1,DB2,5,0,DB2,7,0,DB2,10,0,SL,20,0,SL,25,0,SL,39,0,SL,27.5,0,EXP,1,1,0.04,DB2,3,0,ECON,1,0
+2027,0.35,0.09,1,1,0,2,20,0,1,DB2,5,0,DB2,7,0,DB2,10,0,SL,20,0,SL,25,0,SL,39,0,SL,27.5,0,EXP,1,1,0.04,DB2,3,0,ECON,1,0
