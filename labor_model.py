@@ -31,9 +31,6 @@ def make_calculator(refdict = {}, year=2018):
     calc1.calc_all()
     return calc1
 
-dropbox_path1 = 'C:/Users/cody_/Dropbox/TCJA info/notebook & tax calc code/'
-dropbox_path2 = 'C:/Users/cody_/Dropbox/Taxes, Investment & Growth/Model spreadsheets/Version 4/'
-
 param = Calculator.read_json_param_objects('../../taxcalc/reforms/2017_law.json', None)
 calc_pre = make_calculator(param['policy'], 2014)
 calc_tcja = make_calculator({}, 2014)
@@ -89,7 +86,7 @@ def allLaborChanges(calcA, calcB, elast_sub):
             labeffect.append(calcLaborResponse(calc1, calc2, elast_sub))
     labresults = pd.DataFrame({"Year": range(2014, 2028),
                                "pch_labor": labeffect})
-    labresults.to_csv(dropbox_path2 + "laborresults.csv", index=False)
+    labresults.to_csv("intermediate_results/laborresults.csv", index=False)
     print("Labor response calculated and saved")
     return None
 
@@ -207,10 +204,9 @@ def allOwnerTaxes(calcA, calcB):
                             "tau_e_base": mtr_e_base, "tau_e_ref": mtr_e_ref,
                             "tau_dc_base": mtr_d_c_base, "tau_dc_ref": mtr_d_c_ref,
                             "tau_dnc_base": mtr_d_nc_base, "tau_dnc_ref": mtr_d_nc_ref})
-    results.to_csv(dropbox_path2 + "owner_level_taxes.csv", index=False)
+    results.to_csv("intermediate_results/owner_level_taxes.csv", index=False)
     print("Owner level taxes calculated and saved")
     return None
 
-allOwnerTaxes(calc_pre, calc_tcja)
 
 
