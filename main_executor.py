@@ -17,7 +17,11 @@ import pandas as pd
 import copy
 from scipy.stats import norm
 
-puf_path = 'C:/Users/cody_/Documents/GitHub/tax-calculator/puf.csv'
+taxcalculator_path = 'C:/Users/cody_/Documents/GitHub/tax-calculator/'
+puf_path = taxcalculator_path + 'puf.csv'
+os.chdir('C:/Users/cody_/Documents/GitHub/tax-distributor/')
+path_to_growfactors = taxcalculator_path + 'taxcalc/'
+
 
 # Code for creating calculators
 def make_calculator(refdict = {}, year=2018):
@@ -40,7 +44,7 @@ def make_calculator(refdict = {}, year=2018):
 
 # Make the pre-TCJA and TCJA calculators
 year_to_use = 2018
-param = Calculator.read_json_param_objects('../../taxcalc/reforms/2017_law.json', None)
+param = Calculator.read_json_param_objects(taxcalculator_path + 'taxcalc/reforms/2017_law.json', None)
 calc_pre = make_calculator(param['policy'], year_to_use)
 calc_tcja = make_calculator({}, year_to_use)
 
@@ -52,9 +56,11 @@ exec(open('indiv_tables_code.py').read())
 
 # Run the equity imputations
 exec(open('equity_imputation_code.py').read())
-equity = imputeEquity(calc_pre)
-dshare = imputeDirectEquity(calc_pre)
-wtshare = imputeTaxableIndirectEquity(calc_pre, dshare)
+(equity1, dshare1, wtshare1) = imputeAllEquityInfo(calc_pre)
+equity = np.array(equity1)
+dshare = np.array(dshare1)
+wtshare = np.array(wtshare1)
+
 
 # Execute the necessary code for the business tax distribution
 exec(open('business_distribution_code.py').read())
@@ -63,12 +69,15 @@ exec(open('business_distribution_code.py').read())
 exec(open('business_tables_code.py').read())
 
 # Run the NOL distortion model
-exec(open('nol_model.py').read())
+exec(open('nolmodel.py').read())
 allTheta(1000)
 
 # Execute code for and estimate individual tax incentives
-exec(open('labormodel.py').read())
-allOwnerTaxes(calc_pre, calc_tcja)
+exec(open('labor_model.py').read())
+calc_pre2 = make_calculator(param['policy'], 2014)
+calc_tcja2 = make_calculator({}, 2014)
+allLaborChanges(calc_pre2, calc_tcja2, eti)
+allOwnerTaxes(calc_pre2, calc_tcja2)
 
 # Execute the investment model and estimate changes in investment
 exec(open('investmentmodel.py').read())

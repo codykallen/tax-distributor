@@ -13,7 +13,7 @@ from scipy.stats import norm, describe
 
 cpolicy_base = pd.read_csv('policy_corp_base.csv')
 cpolicy_ref = pd.read_csv('policy_corp_ref.csv')
-random_numbers = pd.read_csv('pseudo_runif.csv')
+random_numbers = pd.read_csv('data_files/pseudo_runif.csv')
 
 #Specify underlying parameters
 r = 0.058
@@ -99,6 +99,8 @@ def calcTheta(year, baseline, nsim):
     taxinc = np.zeros(nsim)
     for s in range(nsim):
         (trueinc[s], taxinc[s]) = calc_theta_once(year, baseline, np.array(random_numbers.iloc[[s]])[0])
+        if (s / 100. - int(s / 100)) == 0.0:
+            print("Sim number " + s)
     TRUEINC = sum(trueinc) / nsim
     TAXINC = sum(taxinc) / nsim
     return TAXINC / TRUEINC

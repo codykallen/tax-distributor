@@ -5,9 +5,6 @@ Created on Mon Nov  5 09:57:52 2018
 Calculates and saves the changes in investment for each asset type and year.
 
 """
-import numpy as np
-import pandas as pd
-import copy
 
 """
 Section 1: Investment incentives
@@ -19,11 +16,11 @@ cpolicy_base = pd.read_csv('policy_corp_base.csv')
 cpolicy_ref = pd.read_csv('policy_corp_ref.csv')
 ncpolicy_base = pd.read_csv('policy_noncorp_base.csv')
 ncpolicy_ref = pd.read_csv('policy_noncorp_ref.csv')
-econdata_base = pd.read_csv('econ_params.csv')
+econdata_base = pd.read_csv('data_files/econ_params.csv')
 econdata_ref = copy.deepcopy(econdata_base)
-industrydata = pd.read_csv("industry_data.csv")
-ownertaxes = pd.read_csv("owner_level_taxes.csv")
-theta_results = pd.read_csv("theta_results.csv")
+industrydata = pd.read_csv("data_files/industry_data.csv")
+ownertaxes = pd.read_csv("intermediate_results/owner_level_taxes.csv")
+theta_results = pd.read_csv("intermediate_results/theta_results.csv")
 
 
 def calcA_expensing(tau, theta):

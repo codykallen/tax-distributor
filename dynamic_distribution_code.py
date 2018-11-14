@@ -6,8 +6,6 @@ Created on Wed Nov 14 09:36:03 2018
 This file takes the growth results and produces tables for the dynamic 
 distributional effects of the TCJA
 """
-path_to_growfactors = 'C:/Users/cody_/Documents/GitHub/tax-calculator/taxcalc/'
-
 # Update the growth factors for tax-calculator
 growthresults = pd.read_csv('intermediate_results/growdiffs.csv')
 growfact_base = pd.read_csv(path_to_growfactors + 'growfactors.csv')
@@ -53,19 +51,19 @@ def make_calculator2(refdict, year, gfactorname):
 calc_tcjaD = make_calculator2({}, 2018, 'growfactors2.csv')
 
 # Static and dynamic comparison for 2018
-static_table1 = applyBtaxDistribution(calc_pre, calc_tcjaS, 2018, equity, dshare, wtshare, nonprofit_split, slgov_split, ranking, scaling, excluding, screening)
+static_table1 = applyBtaxDistribution(calc_pre, calc_tcja, 2018, equity, dshare, wtshare, nonprofit_split, slgov_split, ranking, scaling, excluding, screening)
 dynamic_table1 = applyBtaxDistribution(calc_pre, calc_tcjaD, 2018, equity, dshare, wtshare, nonprofit_split, slgov_split, ranking, scaling, excluding, screening)
 combined_table1 = static_table1.merge(dynamic_table1, on="Income group")
 combined_table1.to_csv('dynamic_tables/dynamicdist2018.csv')
 
 # Static and dynamic comparison for 2023
-static_table2 = applyBtaxDistribution(calc_pre, calc_tcjaS, 2023, equity, dshare, wtshare, nonprofit_split, slgov_split, ranking, scaling, excluding, screening)
+static_table2 = applyBtaxDistribution(calc_pre, calc_tcja, 2023, equity, dshare, wtshare, nonprofit_split, slgov_split, ranking, scaling, excluding, screening)
 dynamic_table2 = applyBtaxDistribution(calc_pre, calc_tcjaD, 2023, equity, dshare, wtshare, nonprofit_split, slgov_split, ranking, scaling, excluding, screening)
 combined_table2 = static_table1.merge(dynamic_table1, on="Income group")
 combined_table2.to_csv('dynamic_tables/dynamicdist2023.csv')
 
 # Static and dynamic comparison for 2027
-static_table3 = applyBtaxDistribution(calc_pre, calc_tcjaS, 2027, equity, dshare, wtshare, nonprofit_split, slgov_split, ranking, scaling, excluding, screening)
+static_table3 = applyBtaxDistribution(calc_pre, calc_tcja, 2027, equity, dshare, wtshare, nonprofit_split, slgov_split, ranking, scaling, excluding, screening)
 dynamic_table3 = applyBtaxDistribution(calc_pre, calc_tcjaD, 2027, equity, dshare, wtshare, nonprofit_split, slgov_split, ranking, scaling, excluding, screening)
 combined_table3 = static_table1.merge(dynamic_table1, on="Income group")
 combined_table3.to_csv('dynamic_tables/dynamicdist2027.csv')

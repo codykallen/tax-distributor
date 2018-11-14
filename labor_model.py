@@ -4,37 +4,10 @@ Created on Wed Nov  7 08:41:54 2018
 
 @author: cody_
 """
-import sys
-sys.path.append('../../')
-from taxcalc import *
-import numpy as np
-import pandas as pd
-import copy
-
 # Set elasticity of taxable income (w.r.t. 1 - MTR)
 eti = 0.25
 # Choose year for effects to begin (to prevent response to retroactive changes)
 startyear = 2018
-
-def make_calculator(refdict = {}, year=2018):
-    # Creates a calculator advanced to the given year and calculates tax results
-    # Note: Passing an empty dictionary to refdict produces a current law calculator
-    assert year in range(2014, 2028)
-    assert type(refdict) is dict
-    pol = Policy()
-    beh = Behavior()
-    rec = Records('../../puf.csv')
-    if refdict != {}:
-        pol.implement_reform(refdict)
-    calc1 = Calculator(pol, rec, beh)
-    calc1.advance_to_year(year)
-    calc1.calc_all()
-    return calc1
-
-param = Calculator.read_json_param_objects('../../taxcalc/reforms/2017_law.json', None)
-calc_pre = make_calculator(param['policy'], 2014)
-calc_tcja = make_calculator({}, 2014)
-
 """
 Section 1. Calculation of the labor response
     This section calculates the percent change in labor supply for each year,
@@ -89,8 +62,6 @@ def allLaborChanges(calcA, calcB, elast_sub):
     labresults.to_csv("intermediate_results/laborresults.csv", index=False)
     print("Labor response calculated and saved")
     return None
-
-allLaborChanges(calc_pre, calc_tcja, eti)
 
 """
 Section 2. Calculation of other weighted average marginal tax rates.

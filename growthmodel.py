@@ -9,10 +9,10 @@ import numpy as np
 import pandas as pd
 import copy
 
-econdata = pd.read_csv('econ_params.csv')
-invresults = pd.read_csv('invresults.csv')
-laborresults = pd.read_csv('laborresults.csv')
-forecasts = pd.read_csv('forecasts.csv')
+econdata = pd.read_csv('data_files/econ_params.csv')
+invresults = pd.read_csv('intermediate_results/invresults.csv')
+laborresults = pd.read_csv('intermediate_results/laborresults.csv')
+forecasts = pd.read_csv('data_files/forecasts.csv')
 
 # Starting year is 2015
 maxyear = 2200
