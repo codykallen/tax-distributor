@@ -173,44 +173,31 @@ def fracAssetholders(calc1, scfdata):
 
 scf_results2 = fracAssetholders(calc_pre, scf_results)
 
-def imputeEquity(calc1):
+def imputeAllEquityInfo(calc1):
     """
-    This function imputes the expected amount of equity per person.
+    This function imputes the information on each unit's equity holdings:
+        Expected value of equity
+        Share of equity held in direct form
+        Share of indirect equity subject to tax at withdrawal
     """
     groupid = assignGroup(calc1)
     holders = identifyStockholders(calc1)
     equity = np.zeros(len(holders))
-    for i in range(len(holders)):
+    dshare = np.zeros(len(groupid))
+    wtshare = np.zeros(len(groupid))
+    for i in range(len(groupid)):
+        # Impute direct equity amount
         prob2 = scf_results2['prob_stock2'][scf_results2['groupid'] == groupid[i]].item()
         eqavg = scf_results2['lequity'][scf_results2['groupid'] == groupid[i]].item()
         if holders[i]:
             equity[i] = np.exp(eqavg)
         else:
             equity[i] = prob2 * np.exp(eqavg)
-    return equity
-
-def imputeDirectEquity(calc1):
-    """
-    This function imputes the expected share of equity held in
-    direct form (stocks and corporate equity in directly held mutual funds). 
-    All other equity is held in tax-preferred savings accounts.
-    """
-    groupid = assignGroup(calc1)
-    dshare = np.zeros(len(groupid))
-    for i in range(len(groupid)):
+        # Impute direct share
         dshare[i] = scf_results2['deqshare'][scf_results2['groupid'] == groupid[i]].item()
-    return dshare
-
-def imputeTaxableIndirectEquity(calc1, dshare):
-    """
-    This function imputes the expected share of equity held in indirect form
-    that is subject to tax at withdrawal. 
-    """
-    groupid = assignGroup(calc1)
-    wtshare = np.zeros(len(groupid))
-    for i in range(len(groupid)):
+        # Impute indirect share taxable at withdrawal
         wtshare[i] = scf_results2['disttaxshare'][scf_results2['groupid'] == groupid[i]].item()
-    return wtshare
+    return (equity, dshare, wtshare)
 
 def imputeOtherFA(calc1):
     """
@@ -227,7 +214,7 @@ def imputeOtherFA(calc1):
         else:
             oassets[i] = prob2 * np.exp(oaavg)
     return oassets
-
+    
 def advanceEquity(equity2016, year):
     """
     This function takes the imputed equity amount for 2016 and advances it to

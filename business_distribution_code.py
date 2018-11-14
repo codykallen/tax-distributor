@@ -223,12 +223,12 @@ def applyBtaxDistribution(calcA, calcB, year, equity, dshare, wtshare,
                        ben_ch2 + comp_ch2 + taxes_ch2 +
                        tdiv_ch3 + stcg_ch3 + ltcg_ch3 +
                        tira_ch3 + free_ch3) * calc1.array('s006'))
-    print("Change in corporate tax liability: " + str(ctaxchange / 10**9))
-    print("Change in pre-tax income: " + str(totalchange / 10**9))
+    #print("Change in corporate tax liability: " + str(ctaxchange / 10**9))
+    #print("Change in pre-tax income: " + str(totalchange / 10**9))
     aft1 = calc1.array('aftertax_income')
     aft2 = calc2.array('aftertax_income')
     wgt = calc1.array('s006')
-    print("Change in after-tax income: " + str(sum((aft2 - aft1) * wgt) / 10**9))
+    #print("Change in after-tax income: " + str(sum((aft2 - aft1) * wgt) / 10**9))
     return table1
 
 def fullDistComparison(calcA, calcB, year, equity, dshare, wtshare,
