@@ -116,7 +116,6 @@ def allTheta(nsim):
     thetares = pd.DataFrame({"Year": range(2014, 2028),
                              "theta_base": theta_base,
                              "theta_ref": theta_ref})
-    thetares.to_csv('theta_results.csv', index=False)
+    thetares.to_csv('intermediate_results/theta_results.csv', index=False)
     return None
 
-allTheta(1000)

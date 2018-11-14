@@ -545,7 +545,6 @@ def allInvChanges(elast_coc_corp, elast_coc_nc, selast_mne):
                             "pch_iprd": pch_iprd,
                             "pch_ipsoft": pch_ipsoft,
                             "pch_ipart": pch_ipart})
-    results.to_csv("invresults.csv", index=False)
+    results.to_csv("intermediate_results/invresults.csv", index=False)
     return None
 
-allInvChanges(-1.0, -1.0, -3.0)

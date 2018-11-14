@@ -152,13 +152,13 @@ GDPratioResults.append(GDPratio[-1])
 yearlist = list(range(2018,2028))
 yearlist.append(maxyear)
 GDPresult = pd.DataFrame({"Year": yearlist, "GDP ratio": GDPratioResults})
-GDPresult.to_csv("growtheffects.csv", index=False)
+GDPresult.to_csv("dynamic_tables/growtheffects.csv", index=False)
 
 GDPforplot = pd.DataFrame({"Year": range(2017, 2048), 
                            "GDP baseline": GDP0[2:33],
                            "GDP reform": GDP1[2:33]})
-GDPforplot.to_csv('GDPdata.csv', index=False)
+GDPforplot.to_csv('dynamic_tables/GDPdata.csv', index=False)
 growdiffs1 = np.array(GDPgrowth1[:13]) - np.array(GDPgrowth0[:13])
 growdiff_tab = pd.DataFrame({"Year": range(2015, 2028), "gfactors": growdiffs1})
-growdiff_tab.to_csv("growdiffs.csv")
+growdiff_tab.to_csv("intermediate_results/growdiffs.csv")
 

@@ -37,10 +37,6 @@ fedshare = 0.001261413
 slgshare = 0.085778364
 rowshare = 0.196694239
 
-nonprofit_split = {"services": 0.208, "compensation": 0.78, "donors": 0, 
-                   "foreign": 0.012}
-slgov_split = {"benefits": 0.0, "compensation": 0.0, "taxes": 1.0}
-
 def npDistribution(calc1, ctaxch, split):
     """
     This function produces an estimate of how much incomes change based on the
