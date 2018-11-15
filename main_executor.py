@@ -10,18 +10,19 @@ Instructions for using the model:
 """
 
 # Import necessary packages
+import os
 import taxcalc
 from taxcalc import *
 import numpy as np
 import pandas as pd
 import copy
 from scipy.stats import norm
-
+    
 taxcalculator_path = 'C:/Users/cody_/Documents/GitHub/tax-calculator/'
 puf_path = taxcalculator_path + 'puf.csv'
 os.chdir('C:/Users/cody_/Documents/GitHub/tax-distributor/')
 path_to_growfactors = taxcalculator_path + 'taxcalc/'
-
+scfresults_path = 'C:/Users/cody_/Desktop/scf/scf_results.csv'
 
 # Code for creating calculators
 def make_calculator(refdict = {}, year=2018):
@@ -47,6 +48,21 @@ year_to_use = 2018
 param = Calculator.read_json_param_objects(taxcalculator_path + 'taxcalc/reforms/2017_law.json', None)
 calc_pre = make_calculator(param['policy'], year_to_use)
 calc_tcja = make_calculator({}, year_to_use)
+
+# Change in corporate tax liabilities for each year 2018-2027
+ctaxrev = {"2018": -94.38 * 10**9,
+           "2019": -95.83 * 10**9,
+           "2020": -79.939 * 10**9,
+           "2021": -56.961 * 10**9,
+           "2022": -31.9 * 10**9,
+           "2023": -7.383 * 10**9,
+           "2024": 9.777 * 10**9,
+           "2025": 14.129 * 10**9,
+           "2026": -9.033 * 10**9,
+           "2027": -57.566 * 10**9}
+
+# Define all the assumptions we will use
+exec(open('assumptions.py').read())
 
 # Execute the necessary code for distributional analysis (in general)
 exec(open('distributional_code.py').read())
@@ -81,7 +97,7 @@ allOwnerTaxes(calc_pre2, calc_tcja2)
 
 # Execute the investment model and estimate changes in investment
 exec(open('investmentmodel.py').read())
-allInvChanges(-1.0, -1.0, -3.0)
+allInvChanges(ELAST_INV_CORP, ELAST_INV_NONCORP, SELAST_INV_MNE)
 
 # Execute the growth model
 exec(open('growthmodel.py').read())

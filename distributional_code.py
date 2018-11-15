@@ -38,8 +38,10 @@ means of comparison, rankings, scalings, etc.
                     "fraccut100": receiving tax cut of at least $100
                     "frachike100": receiving tax hike of at least $100
                     "charity": total charitable contributions
-                    "charity_after": charitable contributions after marginal subsidy
-                    "state_taxes": State and local income/sales and property taxes less refunds
+                    "charity_after": charitable contributions after marginal
+                                     subsidy
+                    "state_taxes": State and local income/sales and property
+                                   taxes less refunds
                     "benefits": consumption value of government benefits
                     "medicaid": Medicaid benefits (actuarial value)
                     "wages": wage and salary income
@@ -92,8 +94,6 @@ means of comparison, rankings, scalings, etc.
                     "3+": 3 or more children under 18
                     "nonzero": at least one child under 18
 """
-import numpy as np
-import pandas as pd
 
 def getIncome(calc, income):
     """
@@ -137,7 +137,8 @@ def getMeasures(calc1, calc2, measure):
         "frachike100": receiving tax hike of at least $100
         "charity": total charitable contributions
         "charity_after": charitable contributions after marginal subsidy
-        "state_taxes": state and local income/sales and property taxes less refunds
+        "state_taxes": state and local income/sales and property taxes less
+                       refunds
         "benefits": consumption value of government benefits
         "medicaid": Medical benefits (actuarial value)
         "wages": wage and salary income
@@ -194,16 +195,20 @@ def getMeasures(calc1, calc2, measure):
         var2 = np.ones(len(calc2.array('s006')))
     elif measure == "fraccut":
         var1 = np.ones(len(calc1.array('s006')))
-        var2 = np.where(calc2.array('combined') - calc1.array('combined') < 0, 1, 0)
+        var2 = np.where(calc2.array('combined') - calc1.array('combined') < 0,
+                        1, 0)
     elif measure == "frachike":
         var1 = np.ones(len(calc1.array('s006')))
-        var2 = np.where(calc2.array('combined') - calc1.array('combined') > 0, 1, 0)
+        var2 = np.where(calc2.array('combined') - calc1.array('combined') > 0,
+                        1, 0)
     elif measure == "fraccut":
         var1 = np.ones(len(calc1.array('s006')))
-        var2 = np.where(calc2.array('combined') - calc1.array('combined') < -100, 1, 0)
+        var2 = np.where(calc2.array('combined') - calc1.array('combined') <
+                        -100, 1, 0)
     elif measure == "fraccut":
         var1 = np.ones(len(calc1.array('s006')))
-        var2 = np.where(calc2.array('combined') - calc1.array('combined') > 100, 1, 0)
+        var2 = np.where(calc2.array('combined') - calc1.array('combined') >
+                        100, 1, 0)
     elif measure == "charity":
         cashgiving1 = calc1.array('e19800')
         cashgiving2 = calc2.array('e19800')
@@ -220,11 +225,15 @@ def getMeasures(calc1, calc2, measure):
         mtr_cash2 = calc2.mtr('e19800')[2]
         mtr_noncash1 = calc1.mtr('e20100')[2]
         mtr_noncash2 = calc2.mtr('e20100')[2]
-        var1 = cashgiving1 * (1 + mtr_cash1) + noncashgiving1 * (1 - mtr_noncash1)
-        var2 = cashgiving2 * (1 + mtr_cash2) + noncashgiving2 * (1 - mtr_noncash2)
+        var1 = (cashgiving1 * (1 + mtr_cash1) +
+                noncashgiving1 * (1 - mtr_noncash1))
+        var2 = (cashgiving2 * (1 + mtr_cash2) +
+                noncashgiving2 * (1 - mtr_noncash2))
     elif measure == "state_taxes":
-        var1 = calc1.array('e18400') + calc1.array('e18500') - calc1.array('e00700')
-        var2 = calc2.array('e18400') + calc2.array('e18500') - calc2.array('e00700')
+        var1 = (calc1.array('e18400') + calc1.array('e18500') -
+                calc1.array('e00700'))
+        var2 = (calc2.array('e18400') + calc2.array('e18500') -
+                calc2.array('e00700'))
     elif measure == "benefits":
         var1 = calc1.array('benefit_value_total')
         var2 = calc2.array('benefit_value_total')
@@ -440,9 +449,11 @@ def distTable_even(calc1, calc2, nbin, income, measure, chtype, rerankby,
     for i in range(nbin):
         groupid = (cumwgt >= i / nbin) & (cumwgt < (i+1) / nbin)
         if chtype == "pch":
-            outcome[i] = sum(var2[groupid] * wgt[groupid]) / sum(var1[groupid] * wgt[groupid]) - 1
+            outcome[i] = (sum(var2[groupid] * wgt[groupid]) /
+                          sum(var1[groupid] * wgt[groupid]) - 1)
         elif chtype == "dch":
-            outcome[i] = sum((var2[groupid] - var1[groupid]) * wgt[groupid]) / sum(wgt[groupid])
+            outcome[i] = (sum((var2[groupid] - var1[groupid]) * wgt[groupid]) /
+                          sum(wgt[groupid]))
         elif chtype == "tch":
             outcome[i] = sum((var2[groupid] - var1[groupid]) * wgt[groupid])
         elif chtype == "level1":
@@ -503,15 +514,20 @@ def distTable_uneven(calc1, calc2, income, measure, chtype, rerankby,
     outcome = np.zeros(9)
     for i in range(8):
         if chtype == "pch":
-            outcome[i] = sum(var2[groupid==i] * wgt[groupid==i]) / sum(var1[groupid==i] * wgt[groupid==i]) - 1
+            outcome[i] = (sum(var2[groupid==i] * wgt[groupid==i]) /
+                          sum(var1[groupid==i] * wgt[groupid==i]) - 1)
         elif chtype == "dch":
-            outcome[i] = sum((var2[groupid==i] - var1[groupid==i]) * wgt[groupid==i]) / sum(wgt[groupid==i])
+            outcome[i] = (sum((var2[groupid==i] - var1[groupid==i]) *
+                              wgt[groupid==i]) / sum(wgt[groupid==i]))
         elif chtype == "tch":
-            outcome[i] = sum((var2[groupid==i] - var1[groupid==i]) * wgt[groupid==i])
+            outcome[i] = (sum((var2[groupid==i] - var1[groupid==i]) *
+                          wgt[groupid==i]))
         elif chtype == "level1":
-            outcome[i] = sum(var1[groupid==i] * wgt[groupid==i]) / sum(wgt[groupid==i])
+            outcome[i] = (sum(var1[groupid==i] * wgt[groupid==i]) /
+                          sum(wgt[groupid==i]))
         elif chtype == "level2":
-            outcome[i] = sum(var2[groupid==i] * wgt[groupid==i]) / sum(wgt[groupid==i])
+            outcome[i] = (sum(var2[groupid==i] * wgt[groupid==i]) /
+                          sum(wgt[groupid==i]))
         elif chtype == "total1":
             outcome[i] = sum(var1[groupid==i] * wgt[groupid==i])
         elif chtype == "total2":
@@ -573,15 +589,20 @@ def distTable_km(calc1, calc2, income, measure, chtype, rerankby,
     outcome = np.zeros(13)
     for i in range(12):
         if chtype == "pch":
-            outcome[i] = sum(var2[groupid==i] * wgt[groupid==i]) / sum(var1[groupid==i] * wgt[groupid==i]) - 1
+            outcome[i] = (sum(var2[groupid==i] * wgt[groupid==i]) /
+                          sum(var1[groupid==i] * wgt[groupid==i]) - 1)
         elif chtype == "dch":
-            outcome[i] = sum((var2[groupid==i] - var1[groupid==i]) * wgt[groupid==i]) / sum(wgt[groupid==i])
+            outcome[i] = (sum((var2[groupid==i] - var1[groupid==i]) *
+                              wgt[groupid==i]) / sum(wgt[groupid==i]))
         elif chtype == "tch":
-            outcome[i] = sum((var2[groupid==i] - var1[groupid==i]) * wgt[groupid==i])
+            outcome[i] = (sum((var2[groupid==i] - var1[groupid==i]) *
+                          wgt[groupid==i]))
         elif chtype == "level1":
-            outcome[i] = sum(var1[groupid==i] * wgt[groupid==i]) / sum(wgt[groupid==i])
+            outcome[i] = (sum(var1[groupid==i] * wgt[groupid==i]) /
+                          sum(wgt[groupid==i]))
         elif chtype == "level2":
-            outcome[i] = sum(var2[groupid==i] * wgt[groupid==i]) / sum(wgt[groupid==i])
+            outcome[i] = (sum(var2[groupid==i] * wgt[groupid==i]) /
+                          sum(wgt[groupid==i]))
         elif chtype == "total1":
             outcome[i] = sum(var1[groupid==i] * wgt[groupid==i])
         elif chtype == "total2":
@@ -638,23 +659,40 @@ def levelTable_km(calc1, calc2, rerankby, rescaleby, exclude, screen):
         Share with no II tax liability
     Returns a pandas DataFrame table
     """
-    totaltax_pre = distTable_km(calc1, calc2, 'expanded', 'totaltax', 'total1', rerankby, rescaleby, exclude, screen)
-    totaltax_post = distTable_km(calc1, calc2, 'expanded', 'totaltax', 'total2', rerankby, rescaleby, exclude, screen)
-    totalinc_pre = distTable_km(calc1, calc2, 'expanded', 'expanded_income', 'total1', rerankby, rescaleby, exclude, screen)
-    totalinc_post = distTable_km(calc1, calc2, 'expanded', 'expanded_income', 'total2', rerankby, rescaleby, exclude, screen)
-    fraczero_pre = distTable_km(calc1, calc2, 'expanded', 'fraczero', 'level1', rerankby, rescaleby, exclude, screen)
-    fraczero_post = distTable_km(calc1, calc2, 'expanded', 'fraczero', 'level2', rerankby, rescaleby, exclude, screen)
+    totaltax_pre = distTable_km(calc1, calc2, 'expanded',
+                                'totaltax', 'total1', 
+                                rerankby, rescaleby, exclude, screen)
+    totaltax_post = distTable_km(calc1, calc2, 'expanded',
+                                 'totaltax', 'total2', 
+                                 rerankby, rescaleby, exclude, screen)
+    totalinc_pre = distTable_km(calc1, calc2, 'expanded',
+                                'expanded_income', 'total1',
+                                rerankby, rescaleby, exclude, screen)
+    totalinc_post = distTable_km(calc1, calc2, 'expanded',
+                                 'expanded_income', 'total2',
+                                 rerankby, rescaleby, exclude, screen)
+    fraczero_pre = distTable_km(calc1, calc2, 'expanded',
+                                'fraczero', 'level1',
+                                rerankby, rescaleby, exclude, screen) * 100
+    fraczero_post = distTable_km(calc1, calc2, 'expanded',
+                                 'fraczero', 'level2',
+                                 rerankby, rescaleby, exclude, screen) * 100
+    # Produce desired measures
+    avgrate_pre = totaltax_pre / totalinc_pre * 100
+    avgrate_post = totaltax_post / totalinc_post * 100
+    taxshare_pre = totaltax_pre / totaltax_pre[-1] * 100
+    taxshare_post = totaltax_post / totaltax_post[-1] * 100
     rowlabel = ['Bottom decile', 'Second decile', 'Third decile',
                 'Fourth decile', 'Fifth decile', 'Sixth decile',
                 'Seventh decile', 'Eighth decile', 'Ninth decile',
                 'Next 5%', 'Next 4%', 'Top 1%', 'All units']
     table1 = pd.DataFrame({"Income group": rowlabel,
-                           "Avg tax rate, pre (%)": totaltax_pre / totalinc_pre * 100,
-                           "Avg tax rate, post (%)": totaltax_post / totalinc_post * 100,
-                           "Share of tax liability, pre (%)": totaltax_pre / totaltax_pre[-1] * 100, 
-                           "Share of tax liability, post (%)": totaltax_post / totaltax_post[-1] * 100,
-                           "No II tax liability, pre (%)": fraczero_pre * 100,
-                           "No II tax liability, post (%)":fraczero_post * 100})
+                           "Avg tax rate, pre (%)": avgrate_pre,
+                           "Avg tax rate, post (%)": avgrate_post,
+                           "Share of tax liability, pre (%)": taxshare_pre, 
+                           "Share of tax liability, post (%)": taxshare_post,
+                           "No II tax liability, pre (%)": fraczero_pre,
+                           "No II tax liability, post (%)":fraczero_post})
     return table1
 
 def changeTable_km(calc1, calc2, rerankby, rescaleby, exclude, screen):
@@ -667,25 +705,43 @@ def changeTable_km(calc1, calc2, rerankby, rescaleby, exclude, screen):
         Share receiving tax cut
         Share receiving tax hike
     """
-    totaltax_pre = distTable_km(calc1, calc2, 'expanded', 'totaltax', 'total1', rerankby, rescaleby, exclude, screen)
-    totaltax_post = distTable_km(calc1, calc2, 'expanded', 'totaltax', 'total2', rerankby, rescaleby, exclude, screen)
-    totalinc_pre = distTable_km(calc1, calc2, 'expanded', 'expanded_income', 'total1', rerankby, rescaleby, exclude, screen)
-    totalinc_post = distTable_km(calc1, calc2, 'expanded', 'expanded_income', 'total2', rerankby, rescaleby, exclude, screen)
-    tax_ch = distTable_km(calc1, calc2, 'expanded', 'totaltax', 'dch', rerankby, rescaleby, exclude, screen)
-    totalchange = distTable_km(calc1, calc2, 'expanded', 'totaltax', 'tch', rerankby, rescaleby, exclude, screen)
-    taxhike = distTable_km(calc1, calc2, 'expanded', 'frachike', 'level2', rerankby, rescaleby, exclude, screen)
-    taxcut = distTable_km(calc1, calc2, 'expanded', 'fraccut', 'level2', rerankby, rescaleby, exclude, screen)
-    aftertax_pch = (totalinc_post - totaltax_post) / (totalinc_pre - totaltax_pre) - 1
+    totaltax_pre = distTable_km(calc1, calc2, 'expanded',
+                                'totaltax', 'total1',
+                                rerankby, rescaleby, exclude, screen)
+    totaltax_post = distTable_km(calc1, calc2, 'expanded',
+                                 'totaltax', 'total2',
+                                 rerankby, rescaleby, exclude, screen)
+    totalinc_pre = distTable_km(calc1, calc2, 'expanded',
+                                'expanded_income', 'total1',
+                                rerankby, rescaleby, exclude, screen)
+    totalinc_post = distTable_km(calc1, calc2, 'expanded',
+                                 'expanded_income', 'total2',
+                                 rerankby, rescaleby, exclude, screen)
+    tax_ch = distTable_km(calc1, calc2, 'expanded',
+                          'totaltax', 'dch',
+                          rerankby, rescaleby, exclude, screen)
+    totalchange = distTable_km(calc1, calc2, 'expanded',
+                               'totaltax', 'tch',
+                               rerankby, rescaleby, exclude, screen)
+    taxhike = distTable_km(calc1, calc2, 'expanded',
+                           'frachike', 'level2',
+                           rerankby, rescaleby, exclude, screen) * 100
+    taxcut = distTable_km(calc1, calc2, 'expanded',
+                          'fraccut', 'level2',
+                          rerankby, rescaleby, exclude, screen) * 100
+    aftertax_pch = ((totalinc_post - totaltax_post) /
+                    (totalinc_pre - totaltax_pre) - 1) * 100
+    change_share = totalchange / totalchange[-1] * 100
     rowlabel = ['Bottom decile', 'Second decile', 'Third decile',
                 'Fourth decile', 'Fifth decile', 'Sixth decile',
                 'Seventh decile', 'Eighth decile', 'Ninth decile',
                 'Next 5%', 'Next 4%', 'Top 1%', 'All units']
     table1 = pd.DataFrame({"Income group": rowlabel,
-                           "Change in after-tax income (%)": aftertax_pch * 100,
+                           "Change in after-tax income (%)": aftertax_pch,
                            "Average tax change ($)": tax_ch,
-                           "Share of the tax change (%)": totalchange / totalchange[-1] * 100,
-                           "Share receiving tax cut (%)": taxcut * 100,
-                           "Share receiving tax hike (%)": taxhike * 100})
+                           "Share of the tax change (%)": change_share,
+                           "Share receiving tax cut (%)": taxcut,
+                           "Share receiving tax hike (%)": taxhike})
     return table1
 
 def demogTable_km(calc1, calc2, exclude, screen):
@@ -699,20 +755,34 @@ def demogTable_km(calc1, calc2, exclude, screen):
         Percent change in after-tax income
     """
     rankscale = {"w_adult": 1, "w_child": 1, "elast_size": 0}
-    totaltax_pre = distTable_km(calc1, calc2, 'expanded', 'totaltax', 'total1', rankscale, rankscale, exclude, screen)
-    totaltax_post = distTable_km(calc1, calc2, 'expanded', 'totaltax', 'total2', rankscale, rankscale, exclude, screen)
-    totalinc_pre = distTable_km(calc1, calc2, 'expanded', 'expanded_income', 'total1', rankscale, rankscale, exclude, screen)
-    totalinc_post = distTable_km(calc1, calc2, 'expanded', 'expanded_income', 'total2', rankscale, rankscale, exclude, screen)
-    tax_ch = distTable_km(calc1, calc2, 'expanded', 'totaltax', 'dch', rankscale, rankscale, exclude, screen)
-    nfilers = distTable_km(calc1, calc2, 'expanded', 'filers', 'total1', rankscale, rankscale, exclude, screen)
+    totaltax_pre = distTable_km(calc1, calc2, 'expanded',
+                                'totaltax', 'total1',
+                                rankscale, rankscale, exclude, screen)
+    totaltax_post = distTable_km(calc1, calc2, 'expanded',
+                                 'totaltax', 'total2',
+                                 rankscale, rankscale, exclude, screen)
+    totalinc_pre = distTable_km(calc1, calc2, 'expanded', 
+                                'expanded_income', 'total1',
+                                rankscale, rankscale, exclude, screen)
+    totalinc_post = distTable_km(calc1, calc2, 'expanded',
+                                 'expanded_income', 'total2',
+                                 rankscale, rankscale, exclude, screen)
+    tax_ch = distTable_km(calc1, calc2, 'expanded',
+                          'totaltax', 'dch',
+                          rankscale, rankscale, exclude, screen)
+    nfilers = distTable_km(calc1, calc2, 'expanded',
+                           'filers', 'total1',
+                           rankscale, rankscale, exclude, screen)
     rowlabel = ['Bottom decile', 'Second decile', 'Third decile',
                 'Fourth decile', 'Fifth decile', 'Sixth decile',
                 'Seventh decile', 'Eighth decile', 'Ninth decile',
                 'Next 5%', 'Next 4%', 'Top 1%', 'All units']
+    avgrate_pre = totaltax_pre / totalinc_pre * 100
+    avgrate_post = totaltax_post / totalinc_post * 100
     table1 = pd.DataFrame({"Income group": rowlabel,
                            "Percent of filers": nfilers / nfilers[-1] * 100,
-                           "Avg tax rate, pre (%)": totaltax_pre / totalinc_pre * 100,
-                           "Avg tax rate, post (%)": totaltax_post / totalinc_post * 100,
+                           "Avg tax rate, pre (%)": avgrate_pre,
+                           "Avg tax rate, post (%)": avgrate_post,
                            "Average tax change ($)": tax_ch})
     return table1
 

@@ -17,25 +17,6 @@ Note: This requires that you have already compiled the following files:
     distributional_code.py
     equity_imputation_code.py
 """
-import numpy as np
-import pandas as pd
-import copy
-# Decrease in corporate tax liabilities for each year 2018-2027
-ctaxrev = {"2018": -94.38 * 10**9,
-           "2019": -95.83 * 10**9,
-           "2020": -79.939 * 10**9,
-           "2021": -56.961 * 10**9,
-           "2022": -31.9 * 10**9,
-           "2023": -7.383 * 10**9,
-           "2024": 9.777 * 10**9,
-           "2025": 14.129 * 10**9,
-           "2026": -9.033 * 10**9,
-           "2027": -57.566 * 10**9}
-hhshare = 0.668920896
-npshare = 0.047345087
-fedshare = 0.001261413
-slgshare = 0.085778364
-rowshare = 0.196694239
 
 def npDistribution(calc1, ctaxch, split):
     """
@@ -44,11 +25,14 @@ def npDistribution(calc1, ctaxch, split):
     Note that the year should be the same for calc1 and ctaxch.
     Inputs:
         ctaxch: the change in corporate tax liability ($)
-            Note: ctaxch should be positive for a tax hike, and negative for a tax cut
+            Note: ctaxch should be positive for a tax hike, 
+                  and negative for a tax cut
         split: dict of how to allocate the burden:
-            "services": reduce services using distribution of benefit_value_total
+            "services": reduce services using distribution of 
+                        benefit_value_total
             "compensation": reduce compensation using distribution of e00200
-            "donors": reduce compensation using distribution of e19800 + e20100
+            "donors": reduce compensation using distribution of 
+                      e19800 + e20100
             "foreign": reduce provision of foreign aid
     Returns a tuple of the changes  to be added to:
         mcare_ben: for nontaxable services
@@ -81,7 +65,8 @@ def slgDistribution(calc1, ctaxch, split):
     Note that the year should be the same for calc1 and ctaxch.
     Inputs:
         ctaxch: the change in corporate tax liability ($)
-            Note: ctaxch should be positive for a tax hike, and negative for a tax cut
+            Note: ctaxch should be positive for a tax hike, 
+                  and negative for a tax cut
         split: dict of how to allocate the burden:
             "benefits": reduce spending proportional to government benefits
             "compensation": reduce compensation using distribution of e00200
@@ -98,15 +83,14 @@ def slgDistribution(calc1, ctaxch, split):
     totch_tax = -ctaxch * slgshare * split["taxes"]
     benefits = calc1.array('benefit_value_total')
     comp = calc1.array('e00200')
-    taxes = calc1.array('e18400') + calc1.array('e18500') - calc1.array('e00700')
+    taxes = (calc1.array('e18400') + calc1.array('e18500') -
+             calc1.array('e00700'))
     wgt = calc1.array('s006')
     benefits_ch = totch_benefits * benefits / sum(benefits * wgt)
     comp_ch = totch_comp * comp / sum(comp * wgt)
     taxes_ch = totch_tax * taxes / sum(taxes * wgt)
     return (benefits_ch, comp_ch, taxes_ch)
 
-divshare = 0.44
-cgsplit = [0.034, 0.496]
 def hhEquityDistribution(calc1, equity, dshare, wtshare, ctaxch):
     """
     This function produces an estimate of how much incomes change base on the
@@ -117,7 +101,8 @@ def hhEquityDistribution(calc1, equity, dshare, wtshare, ctaxch):
         dshare: direct equity share for each person
         wtshare: share of indirect equity taxable at withdrawal per person
         ctaxch: change in corporate tax liability ($)
-            Note: ctaxch should be positive for a tax hike, and negative for a tax cut
+            Note: ctaxch should be positive for a tax hike, 
+                  and negative for a tax cut
     Note that the year should be the same for calc1, equity and ctaxch.
     Process:
         The corporate tax change is allocated proportional to equity.
@@ -153,7 +138,8 @@ def hhEquityDistribution(calc1, equity, dshare, wtshare, ctaxch):
     # Tax burden on dividend income
     qdiv = calc1.array('e00650')
     tdiv = calc1.array('e00600')
-    qdivshare = sum(qdiv * calc1.array('s006')) / sum(tdiv * calc1.array('s006'))
+    qdivshare = (sum(qdiv * calc1.array('s006')) /
+                 sum(tdiv * calc1.array('s006')))
     divsplit = np.where(tdiv > 0, qdiv / (tdiv + 0.00001), qdivshare)
     ctax_qdiv = (ctax_direct * divshare * divsplit)
     ctax_nqdiv = (ctax_direct * divshare * (1 - divsplit))
@@ -188,8 +174,10 @@ def applyBtaxDistribution(calcA, calcB, year, equity, dshare, wtshare,
     equity2 = advanceEquity(equity, year)
     ctaxchange = ctaxrev[str(year)]
     # Obtain changes for nonprofit response
-    (ben_ch1, comp_ch1, giving_ch1) = npDistribution(calc1, ctaxchange, npsplit)
-    (ben_ch2, comp_ch2, taxes_ch2) = slgDistribution(calc1, ctaxchange, slgsplit)
+    (ben_ch1, comp_ch1, giving_ch1) = npDistribution(calc1, ctaxchange,
+                                                     npsplit)
+    (ben_ch2, comp_ch2, taxes_ch2) = slgDistribution(calc1, ctaxchange,
+                                                     slgsplit)
     (qdiv_ch3, tdiv_ch3,
      stcg_ch3, ltcg_ch3,
      tira_ch3, free_ch3) = hhEquityDistribution(calc1, equity2, dshare,
@@ -219,16 +207,6 @@ def applyBtaxDistribution(calcA, calcB, year, equity, dshare, wtshare,
     table1 = pd.DataFrame({"Income group": rowlabel,
                            "Percent": pchange,
                            "Average ($)": dchange})
-    totalchange = sum((ben_ch1 + comp_ch1 + giving_ch1 +
-                       ben_ch2 + comp_ch2 + taxes_ch2 +
-                       tdiv_ch3 + stcg_ch3 + ltcg_ch3 +
-                       tira_ch3 + free_ch3) * calc1.array('s006'))
-    #print("Change in corporate tax liability: " + str(ctaxchange / 10**9))
-    #print("Change in pre-tax income: " + str(totalchange / 10**9))
-    aft1 = calc1.array('aftertax_income')
-    aft2 = calc2.array('aftertax_income')
-    wgt = calc1.array('s006')
-    #print("Change in after-tax income: " + str(sum((aft2 - aft1) * wgt) / 10**9))
     return table1
 
 def fullDistComparison(calcA, calcB, year, equity, dshare, wtshare,
@@ -269,9 +247,4 @@ def fullDistComparison(calcA, calcB, year, equity, dshare, wtshare,
     iit_table["Both, percent"] = all_table["Percent"]
     iit_table["Both, average"] = all_table["Average ($)"]
     return iit_table
-
-
-    
-        
-
 

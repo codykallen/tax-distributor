@@ -5,12 +5,6 @@ Created on Thu Nov  8 10:23:20 2018
 @author: cody_
 """
 
-import numpy as np
-import pandas as pd
-import copy
-import scipy
-from scipy.stats import norm, describe
-
 cpolicy_base = pd.read_csv('policy_corp_base.csv')
 cpolicy_ref = pd.read_csv('policy_corp_ref.csv')
 random_numbers = pd.read_csv('data_files/pseudo_runif.csv')
@@ -70,18 +64,22 @@ def calc_theta_once(year, baseline, randarray):
         taxinc1[i] = max(netinc1[i], 0.)
     # calculations for future
     for i in range(10, numyears):
-        return1[i] = (norm.ppf(randarray[i]) + ar1 * norm.ppf(randarray[i-1])) * sd_p + p
+        return1[i] = (norm.ppf(randarray[i]) + ar1 *
+                      norm.ppf(randarray[i-1])) * sd_p + p
         netinc1[i] = return1[i] * K[i]
         if i - cf_years >= 10:
-            cf_expiring = max(-min(netinc1[i-cf_years], 0) - sum(nol_ded1[i-cf_years:i]), 0)
+            cf_expiring = max(-min(netinc1[i-cf_years], 0) -
+                              sum(nol_ded1[i-cf_years:i]), 0)
         else:
             cf_expiring = 0
-        nol_cf1[i] = max((nol_cf1[i-1] - min(netinc1[i-1], 0.) - nol_ded1[i-1]) * (i > 10) - cf_expiring, 0.)
+        nol_cf1[i] = max((nol_cf1[i-1] - min(netinc1[i-1], 0.) -
+                         nol_ded1[i-1]) * (i > 10) - cf_expiring, 0.)
         if netinc1[i] < 0.:
             prevtaxinc = 0.
             if cb_years > 0:
                 prevtaxinc = np.max(sum(taxinc1[max(i-cb_years, 0):i]), 0)
-            nol_ded1[i] = min(-netinc1[i], prevtaxinc) * (1 - refundrate) - netinc1[i] * refundrate
+            nol_ded1[i] = (min(-netinc1[i], prevtaxinc) * (1 - refundrate) -
+                           netinc1[i] * refundrate)
         else:
             nol_ded1[i] = min(netinc1[i] * inc_limit, nol_cf1[i])
         taxinc1[i] = max(netinc1[i], 0.) - nol_ded1[i]
@@ -98,9 +96,8 @@ def calcTheta(year, baseline, nsim):
     trueinc = np.zeros(nsim)
     taxinc = np.zeros(nsim)
     for s in range(nsim):
-        (trueinc[s], taxinc[s]) = calc_theta_once(year, baseline, np.array(random_numbers.iloc[[s]])[0])
-        if (s / 100. - int(s / 100)) == 0.0:
-            print("Sim number " + s)
+        randnums = np.array(random_numbers.iloc[[s]])[0]
+        (trueinc[s], taxinc[s]) = calc_theta_once(year, baseline, randnums)
     TRUEINC = sum(trueinc) / nsim
     TAXINC = sum(taxinc) / nsim
     return TAXINC / TRUEINC
@@ -115,6 +112,7 @@ def allTheta(nsim):
     for year in range(2014, 2028):
         theta_base.append(calcTheta(year, True, nsim))
         theta_ref.append(calcTheta(year, False, nsim))
+        print("Theta calculated for " + str(year))
     thetares = pd.DataFrame({"Year": range(2014, 2028),
                              "theta_base": theta_base,
                              "theta_ref": theta_ref})
