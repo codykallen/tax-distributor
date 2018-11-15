@@ -44,7 +44,8 @@ def calcA_econ2tax(tau0, tau1, ts, theta, bonus, delta, r):
     Assume tax rate changes from tau0 to tau1 at time ts
     """
     A0 = theta * tau0 * delta / (r + delta)
-    Ach = theta * delta / (r + delta) * np.exp(-(r + delta) * ts) * (tau1 - tau0)
+    Ach = (theta * delta / (r + delta) * np.exp(-(r + delta) * ts) *
+           (tau1 - tau0))
     A = bonus * tau0 + (1 - bonus) * (A0 + Ach)
     return A
 
@@ -53,8 +54,10 @@ def calcA_macrs1tax(tau, theta, life, n, bonus, r, pi):
     Present value of the tax shield from MACRS depreciation.
     Assume constant tax rate.
     """
-    Adb = theta * tau * n / (life * (r + pi) + n) * (1 - np.exp(1 - n - life * (r + pi) + life * (r + pi) / n))
-    Asl = theta * tau * n / life / (r + pi) * np.exp(1 - n - life * (r + pi)) * (np.exp(life * (r + pi) / n) - 1)
+    Adb = (theta * tau * n / (life * (r + pi) + n) *
+           (1 - np.exp(1 - n - life * (r + pi) + life * (r + pi) / n)))
+    Asl = (theta * tau * n / life / (r + pi) *
+           np.exp(1 - n - life * (r + pi)) * (np.exp(life * (r + pi) / n) - 1))
     A = bonus * tau + (1 - bonus) * (Adb + Asl)
     return A
 
@@ -64,9 +67,13 @@ def calcA_macrs2taxearly(tau0, tau1, ts, theta, life, n, bonus, r, pi):
     Assume tax rate changes at time ts < life * (1 - 1/n)
     """
     assert ts < life * (1 - 1/n)
-    Adb1 = theta * tau0 * n / (life * (r + pi) + n) * (1 - np.exp(-(r + pi + n/life) * ts))
-    Adb2 = theta * tau1 * n / (life * (r + pi) + n) * (np.exp(-(r + pi + n/life) * ts) - np.exp(1 - n - life * (r + pi) + life * (r + pi) / n))
-    Asl = theta * tau1 * n / life / (r + pi) * np.exp(1 - n - life * (r + pi)) * (np.exp(life * (r + pi) / n) - 1)
+    Adb1 = (theta * tau0 * n / (life * (r + pi) + n) *
+            (1 - np.exp(-(r + pi + n/life) * ts)))
+    Adb2 = (theta * tau1 * n / (life * (r + pi) + n) *
+            (np.exp(-(r + pi + n/life) * ts) -
+             np.exp(1 - n - life * (r + pi) + life * (r + pi) / n)))
+    Asl = (theta * tau1 * n / life / (r + pi) *
+           np.exp(1 - n - life * (r + pi)) * (np.exp(life * (r + pi) / n) - 1))
     A = bonus * tau0 + (1 - bonus) * (Adb1 + Adb2 + Asl)
     return A
 
@@ -76,9 +83,13 @@ def calcA_macrs2taxlate(tau0, tau1, ts, theta, life, n, bonus, r, pi):
     Assume tax rate changes at time ts > life * (1 - 1/n)
     """
     assert ts > life * (1 - 1/n)
-    Adb = theta * tau0 * n / (life * (r + pi) + n) * (1 - np.exp(1 - n - life * (r + pi) + life * (r + pi) / n))
-    Asl1 = theta * tau0 * n / life / (r + pi) * np.exp(1 - n) * (np.exp(-life * (r + pi) + life * (r + pi) / n) - np.exp(-(r + pi) * ts))
-    Asl2 = theta * tau1 * n / life / (r + pi) * np.exp(1 - n) * (np.exp(-(r + pi) * ts) - np.exp(-(r + pi) * life))
+    Adb = (theta * tau0 * n / (life * (r + pi) + n) *
+           (1 - np.exp(1 - n - life * (r + pi) + life * (r + pi) / n)))
+    Asl1 = (theta * tau0 * n / life / (r + pi) * np.exp(1 - n) *
+            (np.exp(-life * (r + pi) + life * (r + pi) / n) -
+             np.exp(-(r + pi) * ts)))
+    Asl2 = (theta * tau1 * n / life / (r + pi) * np.exp(1 - n) *
+            (np.exp(-(r + pi) * ts) - np.exp(-(r + pi) * life)))
     A = bonus * tau0 + (1 - bonus) * (Adb + Asl1 + Asl2)
     return A
 
@@ -88,12 +99,15 @@ def calcA_macrs2taxeven(tau0, tau1, ts, theta, life, n, bonus, r, pi):
     Assume tax rate changes at time ts = life * (1 - 1/n)
     """
     assert ts == life * (1 - 1/n)
-    Adb = theta * tau0 * n / (life * (r + pi) + n) * (1 - np.exp(1 - n - life * (r + pi) + life * (r + pi) / n))
-    Asl = theta * tau1 * n / life / (r + pi) * np.exp(1 - n - life * (r + pi)) * (np.exp(life * (r + pi) / n) - 1)
+    Adb = (theta * tau0 * n / (life * (r + pi) + n) *
+           (1 - np.exp(1 - n - life * (r + pi) + life * (r + pi) / n)))
+    Asl = (theta * tau1 * n / life / (r + pi) *
+           np.exp(1 - n - life * (r + pi)) * (np.exp(life * (r + pi) / n) - 1))
     A = bonus * tau0 + (1 - bonus) * (Adb + Asl)
     return A
 
-def calcA(method, life, bonus, theta, delta, r, pi, tau0, cred = 0, tau1=None, ts=None):
+def calcA(method, life, bonus, theta, delta, r, pi, tau0, cred = 0,
+          tau1=None, ts=None):
     """
     Determines how to calculate the present value of the tax shield from
     capital cost recovery and calls the appropriate function. 
@@ -130,17 +144,21 @@ def calcA(method, life, bonus, theta, delta, r, pi, tau0, cred = 0, tau1=None, t
         else:
             t1 = life * (1 - 1/n)
             if ts < t1:
-                A = calcA_macrs2taxearly(tau0, tau1, ts, theta, life, n, bonus, r, pi)
+                A = calcA_macrs2taxearly(tau0, tau1, ts, theta, life, n,
+                                         bonus, r, pi)
             elif ts == t1:
-                A = calcA_macrs2taxeven(tau0, tau1, ts, theta,life, n, bonus, r, pi)
+                A = calcA_macrs2taxeven(tau0, tau1, ts, theta,life, n,
+                                        bonus, r, pi)
             elif ts < life:
-                A = calcA_macrs2taxlate(tau0, tau1, ts, theta, life, n, bonus, r, pi)
+                A = calcA_macrs2taxlate(tau0, tau1, ts, theta, life, n,
+                                        bonus, r, pi)
             else:
                 A = calcA_macrs1tax(tau0, theta, life, n, bonus, r, pi)
     A2 = A * (1 - cred) + cred
     return A2
 
-def calcF_taxshield(Delta, delta, i, r, profit, theta, dedlimit, tau0, tau1=None, ts=None):
+def calcF_taxshield(Delta, delta, i, r, profit, theta, dedlimit, tau0,
+                    tau1=None, ts=None):
     """
     Calculate present value of the tax shield from interest deductibility.
     """
@@ -162,11 +180,13 @@ def calcF_iitaxdistortion(Delta, delta, r, tauD, tauE):
     dist = Delta * (tauE - tauD) / (r + delta)
     return dist
 
-def calcF(Delta, delta, i, r, profit, theta, dedlimit, tauD, tauE, tau0, tau1=None, ts=None):
+def calcF(Delta, delta, i, r, profit, theta, dedlimit, tauD, tauE, tau0,
+          tau1=None, ts=None):
     """
     Calculate the total financing distortion.
     """
-    shield = calcF_taxshield(Delta, delta, i, r, profit, theta, dedlimit, tau0, tau1, ts)
+    shield = calcF_taxshield(Delta, delta, i, r, profit, theta, dedlimit,
+                             tau0, tau1, ts)
     otherdist = calcF_iitaxdistortion(Delta, delta, r, tauD, tauE)
     F = shield + otherdist
     return F
@@ -188,7 +208,8 @@ def calcCoC(method, life, bonus, theta, delta, r, pi, tau0, rdcred, tau1, ts,
     Calculates the user cost of capital.
     """
     A = calcA(method, life, bonus, theta, delta, r, pi, tau0, rdcred, tau1, ts)
-    F = calcF(Delta, delta, i, r, firmprofit, theta, dedlimit, tauD, tauE, tau0, tau1, ts)
+    F = calcF(Delta, delta, i, r, firmprofit, theta, dedlimit, tauD, tauE,
+              tau0, tau1, ts)
     T = calcT(theta, gamma, r, delta, tau0, tau1, ts)
     Q = (1 - A - F) / (1 - T) * (r + delta)
     return Q
@@ -200,7 +221,8 @@ def calcEATR(method, life, bonus, theta, delta, r, pi, tau0, rdcred, tau1, ts,
     """
     Rstar = (projprofit - r) / (r + delta)
     A = calcA(method, life, bonus, theta, delta, r, pi, tau0, rdcred, tau1, ts)
-    F = calcF(Delta, delta, i, r, firmprofit, theta, dedlimit, tauD, tauE, tau0, tau1, ts)
+    F = calcF(Delta, delta, i, r, firmprofit, theta, dedlimit, tauD, tauE,
+              tau0, tau1, ts)
     T = calcT(theta, gamma, r, delta, tau0, tau1, ts)
     R = -1 + A + F + (projprofit + delta) * (1 - T) / (r + delta)
     P = projprofit / (r + delta)
@@ -327,7 +349,8 @@ def getParams(industry, asset, firmtype, year, baseline):
     dedlimit = paramdata["int_dedlimit"][year2].item()
     # Get info for domestic production deduction
     s199rate = paramdata["s199_rate"][year2].item()
-    s199base = industrydata["DPDbase"][industrydata["Industry"] == industry].item()
+    indid = industrydata["Industry"] == industry
+    s199base = industrydata["DPDbase"][indid].item()
     gamma = 1 - s199base * s199rate
     projprofit = econdata["p_project"][0].item()
     firmprofit = econdata["p_firm"][0].item()
@@ -508,8 +531,8 @@ def getChangeInv(asset, year, elast_coc_corp, elast_coc_nc, selast_mne):
 def allInvChanges(elast_coc_corp, elast_coc_nc, selast_mne):
     """
     This function calculates the percent change in investment in each asset
-    type for all years startyear-2027. All years beyond 2027 use the same result
-    as in 2027.
+    type for all years startyear-2027. All years beyond 2027 use the same
+    result as in 2027.
     """
     assert startyear in range(2015, 2027)
     assert elast_coc_corp <= 0
@@ -529,12 +552,18 @@ def allInvChanges(elast_coc_corp, elast_coc_nc, selast_mne):
         pch_ipsoft[year-2014] = 0
         pch_ipart[year-2014] = 0
     for year in range(startyear, 2028):
-        pch_equip[year-2014] = getChangeInv("equip", year, elast_coc_corp, elast_coc_nc, selast_mne)
-        pch_struc[year-2014] = getChangeInv("struc", year, elast_coc_corp, elast_coc_nc, selast_mne)
-        pch_rentres[year-2014] = getChangeInv("rentres", year, elast_coc_corp, elast_coc_nc, selast_mne)
-        pch_iprd[year-2014] = getChangeInv("iprd", year, elast_coc_corp, elast_coc_nc, selast_mne)
-        pch_ipsoft[year-2014] = getChangeInv("ipsoft", year, elast_coc_corp, elast_coc_nc, selast_mne)
-        pch_ipart[year-2014] = getChangeInv("ipart", year, elast_coc_corp, elast_coc_nc, selast_mne)
+        pch_equip[year-2014] = getChangeInv("equip", year, elast_coc_corp,
+                 elast_coc_nc, selast_mne)
+        pch_struc[year-2014] = getChangeInv("struc", year, elast_coc_corp,
+                 elast_coc_nc, selast_mne)
+        pch_rentres[year-2014] = getChangeInv("rentres", year, elast_coc_corp,
+                   elast_coc_nc, selast_mne)
+        pch_iprd[year-2014] = getChangeInv("iprd", year, elast_coc_corp,
+                elast_coc_nc, selast_mne)
+        pch_ipsoft[year-2014] = getChangeInv("ipsoft", year, elast_coc_corp,
+                  elast_coc_nc, selast_mne)
+        pch_ipart[year-2014] = getChangeInv("ipart", year, elast_coc_corp,
+                 elast_coc_nc, selast_mne)
     results = pd.DataFrame({"Year": range(2014, 2028),
                             "pch_equip": pch_equip,
                             "pch_struc": pch_struc,

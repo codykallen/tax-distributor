@@ -16,8 +16,10 @@ calc1 = make_calculator({}, 2015)
 expinc = calc1.array('expanded_income')
 agi = calc1.array('c00100')
 wgt = calc1.array('s006')
-compinc = (calc1.array('e00200') + calc1.array('e02100') + calc1.array('e00900') + calc1.array('e02000') + 
-           calc1.array('e00400') + calc1.array('e00300') + calc1.array('e00600') + calc1.array('e02300') + 
+compinc = (calc1.array('e00200') + calc1.array('e02100') +
+           calc1.array('e00900') + calc1.array('e02000') + 
+           calc1.array('e00400') + calc1.array('e00300') +
+           calc1.array('e00600') + calc1.array('e02300') + 
            calc1.array('e01500') + calc1.array('e02400'))
 (expinc_a, wgt_a) = zip(*sorted(zip(expinc, wgt)))
 (agi_b, wgt_b) = zip(*sorted(zip(agi, wgt)))
@@ -75,54 +77,71 @@ Section 2: Underlying distribution info
 This presents the underlying relative distributional information
 for the windfall to nonprofits and to state/local governments.
 """
-ranking = {'w_adult': 1, 'w_child': 1, 'elast_size': 0.5}
-scaling = {'w_adult': 1, 'w_child': 1, 'elast_size': 0}
-
 # Distributions for nonprofit stakeholders
-services_tot = distTable_km(calc_pre, calc_tcja, 'expanded', 'benefits', 'total1', ranking, scaling, ["neginc"], ["",""])
-char_tot = distTable_km(calc_pre, calc_tcja, 'expanded', 'charity', 'total1', ranking, scaling, ["neginc"], ["",""])
-char_totafter = distTable_km(calc_pre, calc_tcja, 'expanded', 'charity_after', 'total1', ranking, scaling, ["neginc"], ["",""])
-wage_tot = distTable_km(calc_pre, calc_tcja, 'expanded', 'wages', 'total1', ranking, scaling, ["neginc"], ["",""])
-wage_totafter = distTable_km(calc_pre, calc_tcja, 'expanded', 'wages_after', 'total1', ranking, scaling, ["neginc"], ["",""])
-rowlabel = ['Bottom decile', 'Second decile', 'Third decile', 'Fourth decile', 'Fifth decile', 'Sixth decile',
-            'Seventh decile', 'Eighth decile', 'Ninth decile', 'Next 5%', 'Next 4%', 'Top 1%', 'All units']
+services_tot = distTable_km(calc_pre, calc_tcja, 'expanded',
+                            'benefits', 'total1',
+                            RANKING, SCALING, EXCLUDING, SCREENING)
+char_tot = distTable_km(calc_pre, calc_tcja, 'expanded',
+                        'charity', 'total1',
+                        RANKING, SCALING, EXCLUDING, SCREENING)
+char_totafter = distTable_km(calc_pre, calc_tcja, 'expanded',
+                             'charity_after', 'total1',
+                             RANKING, SCALING, EXCLUDING, SCREENING)
+wage_tot = distTable_km(calc_pre, calc_tcja, 'expanded',
+                        'wages', 'total1',
+                        RANKING, SCALING, EXCLUDING, SCREENING)
+wage_totafter = distTable_km(calc_pre, calc_tcja, 'expanded',
+                             'wages_after', 'total1',
+                             RANKING, SCALING, EXCLUDING, SCREENING)
+rowlabel = ['Bottom decile', 'Second decile', 'Third decile', 'Fourth decile',
+            'Fifth decile', 'Sixth decile', 'Seventh decile', 'Eighth decile',
+            'Ninth decile', 'Next 5%', 'Next 4%', 'Top 1%', 'All units']
+services_dist = services_tot / services_tot[-1]
+wage_dist = wage_tot / wage_tot[-1]
+wageafter_dist = wage_totafter / wage_totafter[-1]
+char_dist = char_tot / char_tot[-1]
+charafter_dist = char_totafter / char_totafter[-1]
+ourmix_tot = 0.208 * services_tot + 0.78 * wage_tot
+ourmix_dist = ourmix_tot / ourmix_tot[-1]
+ourmixafter_tot = 0.208 * services_tot + 0.78 * wage_totafter
+ourmixafter_dist = ourmixafter_tot / ourmixafter_tot[-1]
 nonprof_tableA = pd.DataFrame({"Income groups": rowlabel,
-                               "Reduced services": services_tot / services_tot[-1],
-                               "Reduced compensation": wage_tot / wage_tot[-1],
-                               "More giving": char_tot / char_tot[-1],
-                               "Preferred mix": (0.208 * services_tot + 0.78 * wage_tot) / (0.208 * services_tot[-1] + 0.78 * wage_tot[-1])})
+                               "Reduced services": services_dist,
+                               "Reduced compensation": wage_dist,
+                               "More giving": char_dist,
+                               "Preferred mix": ourmix_dist})
 nonprof_tableB = pd.DataFrame({"Income groups": rowlabel,
-                               "Reduced services": services_tot / services_tot[-1],
-                               "Reduced compensation": wage_totafter / wage_tot[-1],
-                               "More giving": char_totafter / char_tot[-1],
-                               "Preferred mix": (0.208 * services_tot + 0.78 * wage_totafter) / (0.208 * services_tot[-1] + 0.78 * wage_tot[-1])})
+                               "Reduced services": services_dist,
+                               "Reduced compensation": wageafter_dist,
+                               "More giving": charafter_dist,
+                               "Preferred mix": ourmixafter_dist})
 nonprof_tableA.to_csv('business_dist_tables/nonprof_tableA.csv', index=False)
 nonprof_tableB.to_csv('business_dist_tables/nonprof_tableB.csv', index=False)
 
 # Distributions for state/local governments
-ranking = {'w_adult': 1, 'w_child': 1, 'elast_size': 0.5}
-scaling = {'w_adult': 1, 'w_child': 1, 'elast_size': 0}
-benefits = distTable_km(calc_pre, calc_tcja, 'expanded', 'benefits', 'total1', ranking, scaling, ["neginc"], ["",""])
-wage = distTable_km(calc_pre, calc_tcja, 'expanded', 'wages', 'total1', ranking, scaling, ["neginc"], ["",""])
-taxes = distTable_km(calc_pre, calc_tcja, 'expanded', 'state_taxes', 'total1', ranking, scaling, ["neginc"], ["",""])
-rowlabel = ['Bottom decile', 'Second decile', 'Third decile', 'Fourth decile', 'Fifth decile', 'Sixth decile',
-            'Seventh decile', 'Eighth decile', 'Ninth decile', 'Next 5%', 'Next 4%', 'Top 1%', 'All units']
+benefits = distTable_km(calc_pre, calc_tcja, 'expanded',
+                        'benefits', 'total1',
+                        RANKING, SCALING, EXCLUDING, SCREENING)
+wage = distTable_km(calc_pre, calc_tcja, 'expanded',
+                    'wages', 'total1',
+                    RANKING, SCALING, EXCLUDING, SCREENING)
+taxes = distTable_km(calc_pre, calc_tcja, 'expanded',
+                     'state_taxes', 'total1',
+                     RANKING, SCALING, EXCLUDING, SCREENING)
+rowlabel = ['Bottom decile', 'Second decile', 'Third decile', 'Fourth decile',
+            'Fifth decile', 'Sixth decile', 'Seventh decile', 'Eighth decile',
+            'Ninth decile', 'Next 5%', 'Next 4%', 'Top 1%', 'All units']
 slgtable = pd.DataFrame({"Income groups": rowlabel,
                          "Increase Medicaid spending": benefits / benefits[-1],
                          "Increase compensation": wage / wage[-1],
                          "Reduce taxes": taxes / taxes[-1]})
 slgtable.to_csv('business_dist_tables/slg_table.csv', index=False)
 
-# Choose distribution inputs and assumptions of burden split
-ranking = {'w_adult': 1, 'w_child': 1, 'elast_size': 0.5}
-scaling = {'w_adult': 1, 'w_child': 1, 'elast_size': 0}
-excluding = ["neginc"]
-screening = ["", ""]
-nonprofit_split = {"services": 0.208, "compensation": 0.78, "donors": 0, "foreign": 0.012}
-slgov_split = {"benefits": 0.0, "compensation": 1.0, "taxes": 0.0}
-
 # Generate the distributional tables for every year
 for year in range(2018, 2028):
-    dtab = fullDistComparison(calc_pre, calc_tcja, year, equity, dshare, wtshare,
-                              nonprofit_split, slgov_split, ranking, scaling, excluding, screening)
-    dtab.to_csv('business_dist_tables/mainfullstatic' + str(year) + '.csv', index=False)
+    dtab = fullDistComparison(calc_pre, calc_tcja, year,
+                              equity, dshare, wtshare,
+                              nonprofit_split, slgov_split,
+                              RANKING, SCALING, EXCLUDING, SCREENING)
+    dtab.to_csv('business_dist_tables/mainfullstatic' + str(year) + '.csv',
+                index=False)

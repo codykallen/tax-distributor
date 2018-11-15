@@ -17,11 +17,7 @@ following columns:
     'group_mars': identifier for marital status
     'group_age': identifier for age group
 """
-import numpy as np
-import pandas as pd
-import copy
-
-scf_results = pd.read_csv('C:/Users/cody_/Desktop/scf/scf_results.csv')
+scf_results = pd.read_csv(scfresults_path)
 
 def assignGroup(calc1):
     """
@@ -186,17 +182,18 @@ def imputeAllEquityInfo(calc1):
     dshare = np.zeros(len(groupid))
     wtshare = np.zeros(len(groupid))
     for i in range(len(groupid)):
+        gr = (scf_results2['groupid'] == groupid[i])
         # Impute direct equity amount
-        prob2 = scf_results2['prob_stock2'][scf_results2['groupid'] == groupid[i]].item()
-        eqavg = scf_results2['lequity'][scf_results2['groupid'] == groupid[i]].item()
+        prob2 = scf_results2['prob_stock2'][gr].item()
+        eqavg = scf_results2['lequity'][gr].item()
         if holders[i]:
             equity[i] = np.exp(eqavg)
         else:
             equity[i] = prob2 * np.exp(eqavg)
         # Impute direct share
-        dshare[i] = scf_results2['deqshare'][scf_results2['groupid'] == groupid[i]].item()
+        dshare[i] = scf_results2['deqshare'][gr].item()
         # Impute indirect share taxable at withdrawal
-        wtshare[i] = scf_results2['disttaxshare'][scf_results2['groupid'] == groupid[i]].item()
+        wtshare[i] = scf_results2['disttaxshare'][gr].item()
     return (equity, dshare, wtshare)
 
 def imputeOtherFA(calc1):
@@ -207,8 +204,9 @@ def imputeOtherFA(calc1):
     owners = identifyOAssetholders(calc1)
     oassets = np.zeros(len(owners))
     for i in range(len(owners)):
-        prob2 = scf_results2['prob_oasssets'][scf_results2['groupid'] == groupid[i]].item()
-        oaavg = scf_results2['loassets'][scf_results2['groupid'] == groupid[i]].item()
+        gr = (scf_results2['groupid'] == groupid[i])
+        prob2 = scf_results2['prob_oasssets'][gr].item()
+        oaavg = scf_results2['loassets'][gr].item()
         if owners[i]:
             oassets[i] = np.exp(oaavg)
         else:
@@ -227,8 +225,3 @@ def advanceEquity(equity2016, year):
                2334.8, 2424.0, 2517.1, 2619.5, 2724.6]
     equity = equity2016 * EQtotal[year - 2015] / EQtotal[1]
     return equity
-
-
-
-
-

@@ -5,10 +5,6 @@ Created on Tue Nov  6 13:46:55 2018
 @author: cody_
 """
 
-import numpy as np
-import pandas as pd
-import copy
-
 econdata = pd.read_csv('data_files/econ_params.csv')
 invresults = pd.read_csv('intermediate_results/invresults.csv')
 laborresults = pd.read_csv('intermediate_results/laborresults.csv')
@@ -121,26 +117,39 @@ for year in range(2016, maxyear):
     Iipart0.append(Iipart0[-1] * GDP0[-1] / GDP0[-2])
     # Update reform investment using baseline and response
     year2 = min(year, 2027)
-    Iequip1.append(Iequip0[-1] * (1 + invresults['pch_equip'][year2-2014].item()))
-    Istruc1.append(Istruc0[-1] * (1 + invresults['pch_struc'][year2-2014].item()))
-    Irentres1.append(Irentres0[-1] * (1 + invresults['pch_rentres'][year2-2014].item()))
-    Iiprd1.append(Iiprd0[-1] * (1 + invresults['pch_iprd'][year2-2014].item()))
-    Iipsoft1.append(Iipsoft0[-1] * (1 + invresults['pch_ipsoft'][year2-2014].item()))
-    Iipart1.append(Iipart0[-1] * (1 + invresults['pch_ipart'][year2-2014].item()))
-    # Change in aggregate productive capacity based on change in capital growth rate
-    dYequip.append((Kequip1[-1] / Kequip1[-2] - Kequip0[-1] / Kequip0[-2]) * alpha_equip)
-    dYstruc.append((Kstruc1[-1] / Kstruc1[-2] - Kstruc0[-1] / Kstruc0[-2]) * alpha_struc)
-    dYrentres.append((Krentres1[-1] / Krentres1[-2] - Krentres0[-1] / Krentres0[-2]) * alpha_rentres)
-    dYiprd.append((Kiprd1[-1] / Kiprd1[-2] - Kiprd0[-1] / Kiprd0[-2]) * alpha_iprd)
-    dYipsoft.append((Kipsoft1[-1] / Kipsoft1[-2] - Kipsoft0[-1] / Kipsoft0[-2]) * alpha_ipsoft)
-    dYipart.append((Kipart1[-1] / Kipart1[-2] - Kipart0[-1] / Kipart0[-2]) * alpha_ipart)
+    Iequip1.append(Iequip0[-1] *
+                   (1 + invresults['pch_equip'][year2-2014].item()))
+    Istruc1.append(Istruc0[-1] *
+                   (1 + invresults['pch_struc'][year2-2014].item()))
+    Irentres1.append(Irentres0[-1] *
+                     (1 + invresults['pch_rentres'][year2-2014].item()))
+    Iiprd1.append(Iiprd0[-1] *
+                  (1 + invresults['pch_iprd'][year2-2014].item()))
+    Iipsoft1.append(Iipsoft0[-1] *
+                    (1 + invresults['pch_ipsoft'][year2-2014].item()))
+    Iipart1.append(Iipart0[-1] *
+                   (1 + invresults['pch_ipart'][year2-2014].item()))
+    # Change in aggregate productive capacity based on change in capital growth
+    dYequip.append((Kequip1[-1] / Kequip1[-2] - Kequip0[-1] / Kequip0[-2]) *
+                   alpha_equip)
+    dYstruc.append((Kstruc1[-1] / Kstruc1[-2] - Kstruc0[-1] / Kstruc0[-2]) *
+                   alpha_struc)
+    dYrentres.append((Krentres1[-1] / Krentres1[-2] -
+                      Krentres0[-1] / Krentres0[-2]) * alpha_rentres)
+    dYiprd.append((Kiprd1[-1] / Kiprd1[-2] - Kiprd0[-1] / Kiprd0[-2]) *
+                  alpha_iprd)
+    dYipsoft.append((Kipsoft1[-1] / Kipsoft1[-2] -
+                     Kipsoft0[-1] / Kipsoft0[-2]) * alpha_ipsoft)
+    dYipart.append((Kipart1[-1] / Kipart1[-2] - Kipart0[-1] / Kipart0[-2]) *
+                   alpha_ipart)
     # Change in aggregate productive capacity based change in labor growth rate
     if year <= 2027:
         labor.append(1.0 + laborresults['pch_labor'][year-2014].item())
     else:
         labor.append(labor[-1])
     dYlabor.append((labor[-1] / labor[-2] - 1) * alpha_labor)
-    dY.append(dYequip[-1] + dYstruc[-1] + dYrentres[-1] + dYiprd[-1] + dYipsoft[-1] + dYipart[-1] + dYlabor[-1])
+    dY.append(dYequip[-1] + dYstruc[-1] + dYrentres[-1] + dYiprd[-1] +
+              dYipsoft[-1] + dYipart[-1] + dYlabor[-1])
     govinc1.append(govinc0[-1])
     privinc1.append(privinc1[-1] * (privinc0[-1] / privinc0[-2] + dY[-1]))
     GDP1.append(govinc1[-1] + privinc1[-1])
@@ -159,6 +168,7 @@ GDPforplot = pd.DataFrame({"Year": range(2017, 2048),
                            "GDP reform": GDP1[2:33]})
 GDPforplot.to_csv('dynamic_tables/GDPdata.csv', index=False)
 growdiffs1 = np.array(GDPgrowth1[:13]) - np.array(GDPgrowth0[:13])
-growdiff_tab = pd.DataFrame({"Year": range(2015, 2028), "gfactors": growdiffs1})
+growdiff_tab = pd.DataFrame({"Year": range(2015, 2028),
+                             "gfactors": growdiffs1})
 growdiff_tab.to_csv("intermediate_results/growdiffs.csv")
 

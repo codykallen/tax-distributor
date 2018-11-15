@@ -4,10 +4,7 @@ Created on Wed Nov  7 08:41:54 2018
 
 @author: cody_
 """
-# Set elasticity of taxable income (w.r.t. 1 - MTR)
-eti = 0.25
-# Choose year for effects to begin (to prevent response to retroactive changes)
-startyear = 2018
+
 """
 Section 1. Calculation of the labor response
     This section calculates the percent change in labor supply for each year,
@@ -34,7 +31,8 @@ def calcLaborResponse(calc1, calc2, elast_sub):
     mars = calc1.array('MARS')
     # Calculate each unit's labor response
     primary_response = ((1 - mtr2p) / (1 - mtr1p) - 1) * elast_sub
-    second_response = np.where(mars == 2, ((1 - mtr2s) / (1 - mtr1s) - 1) * elast_sub, 0.)
+    second_response = np.where(mars == 2, ((1 - mtr2s) / (1 - mtr1s) - 1) *
+                               elast_sub, 0.)
     response = (sum((primary_response * wagep + second_response * wages) *
                     wgt) / sum((wagep + wages) * wgt))
     return response
@@ -79,7 +77,8 @@ def calcTauNC(calc):
     inc2 = np.abs(calc.array('e26270'))
     inc3 = np.abs(calc.array('e02000') - calc.array('e26270'))
     wgt = calc.array('s006')
-    MTR = sum((mtr1 * inc1 + mtr2 * inc2 + mtr3 * inc3) * wgt) / sum((inc1 + inc2 + inc3) * wgt)
+    MTR = (sum((mtr1 * inc1 + mtr2 * inc2 + mtr3 * inc3) * wgt) /
+           sum((inc1 + inc2 + inc3) * wgt))
     return MTR
 
 def calcTauDnc(calc):
@@ -171,13 +170,14 @@ def allOwnerTaxes(calcA, calcB):
         mtr_d_nc_base.append(calcTauDnc(calc1))
         mtr_d_nc_ref.append(calcTauDnc(calc2))
     results = pd.DataFrame({"Year": range(2014, 2028),
-                            "tau_nc_base": mtr_nc_base, "tau_nc_ref": mtr_nc_ref,
-                            "tau_e_base": mtr_e_base, "tau_e_ref": mtr_e_ref,
-                            "tau_dc_base": mtr_d_c_base, "tau_dc_ref": mtr_d_c_ref,
-                            "tau_dnc_base": mtr_d_nc_base, "tau_dnc_ref": mtr_d_nc_ref})
+                            "tau_nc_base": mtr_nc_base,
+                            "tau_nc_ref": mtr_nc_ref,
+                            "tau_e_base": mtr_e_base,
+                            "tau_e_ref": mtr_e_ref,
+                            "tau_dc_base": mtr_d_c_base,
+                            "tau_dc_ref": mtr_d_c_ref,
+                            "tau_dnc_base": mtr_d_nc_base,
+                            "tau_dnc_ref": mtr_d_nc_ref})
     results.to_csv("intermediate_results/owner_level_taxes.csv", index=False)
     print("Owner level taxes calculated and saved")
     return None
-
-
-
