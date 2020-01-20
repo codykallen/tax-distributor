@@ -18,10 +18,9 @@ import pandas as pd
 import copy
 from scipy.stats import norm
     
-taxcalculator_path = 'C:/Users/cody_/Documents/GitHub/tax-calculator/'
-puf_path = taxcalculator_path + 'puf.csv'
+puf_path = 'puf09112018.csv'
 os.chdir('C:/Users/cody_/Documents/GitHub/tax-distributor/')
-path_to_growfactors = taxcalculator_path + 'taxcalc/'
+path_to_growfactors = 'taxcalc/'
 scfresults_path = 'C:/Users/cody_/Desktop/scf/scf_results.csv'
 
 # Code for creating calculators
@@ -84,26 +83,38 @@ exec(open('business_distribution_code.py').read())
 # Run the static corporate income tax distributional analysis
 exec(open('business_tables_code.py').read())
 
-# Run the NOL distortion model
-exec(open('nolmodel.py').read())
-allTheta(1000)
+"""
+If desired, run using a simple growth model, based on a first-order
+log-linearized effect using marginal incentives only.
+Alternatively, run using robustness analysis for growth effects.
+"""
+ownGrowthModel = True
 
-# Execute code for and estimate individual tax incentives
-exec(open('labor_model.py').read())
-calc_pre2 = make_calculator(param['policy'], 2014)
-calc_tcja2 = make_calculator({}, 2014)
-allLaborChanges(calc_pre2, calc_tcja2, eti)
-allOwnerTaxes(calc_pre2, calc_tcja2)
-
-# Execute the investment model and estimate changes in investment
-exec(open('investmentmodel.py').read())
-allInvChanges(ELAST_INV_CORP, ELAST_INV_NONCORP, SELAST_INV_MNE)
-
-# Execute the growth model
-exec(open('growthmodel.py').read())
+if ownGrowthModel:
+    # Run the NOL distortion model
+    exec(open('nolmodel.py').read())
+    allTheta(1000)
+    # Execute code for and estimate individual tax incentives
+    exec(open('labor_model.py').read())
+    calc_pre2 = make_calculator(param['policy'], 2014)
+    calc_tcja2 = make_calculator({}, 2014)
+    allLaborChanges(calc_pre2, calc_tcja2, eti)
+    allOwnerTaxes(calc_pre2, calc_tcja2)
+    # Execute the investment model and estimate changes in investment
+    exec(open('investmentmodel.py').read())
+    allInvChanges(ELAST_INV_CORP, ELAST_INV_NONCORP, SELAST_INV_MNE)
+    # Execute the growth model
+    exec(open('growthmodel.py').read())
+else:
+    # Growth effect to consider (pct change in GDP level)
+    geffect = 0.0
+    # Construct alternative file for growth effect (permanent increase in 2018)
+    growdiffs1 = np.zeros(13)
+    growdiffs1[4] = geffect
+    # Save these alternative growth rate effects to file for dynamic work
+    growdiff_tab = pd.DataFrame({"Year": range(2015, 2028),
+                                 "gfactors": growdiffs1})
+    growdiff_tab.to_csv("intermediate_results/growdiffs.csv")
 
 # Execute the dynamic distributional anaylsis
 exec(open('dynamic_distribution_code.py').read())
-
-
-

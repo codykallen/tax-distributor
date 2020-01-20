@@ -5,21 +5,15 @@ This code runs the distributional and growth analysis in Kallen and Mathur (2018
 # Current status
 
 The model can be run in full. However, it remains under development. We hope to incorporate the following improvements:
- - Industry detail for investment model:
-   - The investment response model uses overall corporate and noncorporate investment shares, but it implicitly assumes these are the same within every sector. 
-   - A potential improvement make the corporate and noncorporate investment shares specific to each industry.
- - International provisions for MNEs
-   - We would like to incorporate the investment location incentives in GILTI, FDII and the DRD more fully into the EATR. 
-   - This should also recognize the different incentives from these for location of IP investment and physical investments. 
  - Equity imputation improvements
    - The current version uses deteministic methods. This should be modified to a pseudorandom imputation using pre-generated random numbers.
    - We will improve the specific details of imputation to more fully utilize comparable measures in the PUF and SCF. 
 
 # Model dependencies:
- - Python language, using Anaconda packages
- - `taxcalc`
-   - You can install this using `conda install -c ospc taxcalc`
- - IRS public use file for 2011, with modifications using `taxdata`
+ - Python 3.6 or higher, using Anaconda packages
+ - `taxcalc`, version 0.21.0, embedded here (for consistency)
+ - IRS public use file for 2011, with modifications using `taxdata`, version as of PR [#283](https://github.com/PSLmodels/taxdata/pull/283)
+ - SCF data files for 2016 in Stata format, including the summary extract public data file (`rscfp2016.dta`) and the full public data set (`p16i6.dta`)
 
 # How to use the model
 
