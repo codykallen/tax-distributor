@@ -5,8 +5,6 @@ Created on Wed Nov 14 08:19:52 2018
 @author: cody_
 This is the main execution file. It runs all the other files in the 
 appropriate orders to ensure that the model works.
-
-Instructions for using the model:
 """
 
 # Import necessary packages
@@ -18,10 +16,10 @@ import pandas as pd
 import copy
 from scipy.stats import norm
     
-puf_path = 'puf09112018.csv'
+puf_path = 'data_files/puf09112018.csv'
 os.chdir('C:/Users/cody_/Documents/GitHub/tax-distributor/')
 path_to_growfactors = 'taxcalc/'
-scfresults_path = 'C:/Users/cody_/Desktop/scf/scf_results.csv'
+scfresults_path = 'data_files/scf_results.csv'
 
 # Code for creating calculators
 def make_calculator(refdict = {}, year=2018):

@@ -14,6 +14,7 @@ The model can be run in full. However, it remains under development. We hope to 
  - `taxcalc`, version 0.21.0, embedded here (for consistency)
  - IRS public use file for 2011, with modifications using `taxdata`, version as of PR [#283](https://github.com/PSLmodels/taxdata/pull/283)
  - SCF data files for 2016 in Stata format, including the summary extract public data file (`rscfp2016.dta`) and the full public data set (`p16i6.dta`)
+ - Save these data files in the `data_files` folder.
 
 # How to use the model
 
@@ -23,7 +24,9 @@ The main file defines a Calculator for pre-TCJA law (calc_pre) and a Calculator 
 
 You also need to specify the change in corporate tax revenue in each year, also in the main file.
 
-You should specify changes to corporate and noncorporate business tax rules. The baseline (pre-TCJA) is in `policy_corp_base.csv` and `policy_noncorp_base.csv`. The reform (TCJA) is in `policy_corp_ref.csv` and `policy_noncorp_ref.csv`. 
+To run the dynamic model, you should specify changes to corporate and noncorporate business tax rules. The baseline (pre-TCJA) is in `policy_corp_base.csv` and `policy_noncorp_base.csv`. The reform (TCJA) is in `policy_corp_ref.csv` and `policy_noncorp_ref.csv`. 
+
+To do the analysis of the SCF data, use `data_files\scf_analysis.do`.
 
 Finally, you can modify the main assumptions we use, in `assumptions.py`. 
 
