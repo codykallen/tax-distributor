@@ -16,6 +16,7 @@ The model can be run in full. However, it remains under development. We hope to 
  - SCF data files for 2016 in Stata format, including the summary extract public data file (`rscfp2016.dta`) and the full public data set (`p16i6.dta`)
  - Save these data files in the `data_files` folder.
 
+Warning: If you have the conda taxcalc package installed, it may conflict with the local saved version 0.21.0. If the `main_executor.py` file imports the wrong version of taxcalc, it will not run (due to deprecation of the `Behavior` class).
 # How to use the model
 
 tax-distributor is run from the `main_executor.py` file. Once you open this file, the first changes to make are to correct the paths to the relevant ones on your computer.
