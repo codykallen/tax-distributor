@@ -7,17 +7,20 @@ This is the main execution file. It runs all the other files in the
 appropriate orders to ensure that the model works.
 """
 
-# Import necessary packages
+# Import common packages
 import os
-import taxcalc
-from taxcalc import *
+os.chdir('C:/Users/cody_/Documents/GitHub/tax-distributor/')
 import numpy as np
 import pandas as pd
 import copy
 from scipy.stats import norm
+
+# Import local version of taxcalc
+import taxcalc
+from taxcalc import *
+
     
 puf_path = 'data_files/puf09112018.csv'
-os.chdir('C:/Users/cody_/Documents/GitHub/tax-distributor/')
 path_to_growfactors = 'taxcalc/'
 scfresults_path = 'data_files/scf_results.csv'
 
@@ -42,7 +45,7 @@ def make_calculator(refdict = {}, year=2018):
 
 # Make the pre-TCJA and TCJA calculators
 year_to_use = 2018
-param = Calculator.read_json_param_objects(taxcalculator_path + 'taxcalc/reforms/2017_law.json', None)
+param = Calculator.read_json_param_objects('taxcalc/reforms/2017_law.json', None)
 calc_pre = make_calculator(param['policy'], year_to_use)
 calc_tcja = make_calculator({}, year_to_use)
 
@@ -86,7 +89,7 @@ If desired, run using a simple growth model, based on a first-order
 log-linearized effect using marginal incentives only.
 Alternatively, run using robustness analysis for growth effects.
 """
-ownGrowthModel = True
+ownGrowthModel = False
 
 if ownGrowthModel:
     # Run the NOL distortion model
