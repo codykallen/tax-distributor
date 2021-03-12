@@ -4,7 +4,7 @@ This file compiles all of the assumptions and decisions for comparing filers.
 """
 # Our preferred distributional comparison decisions
 RANKING = {"w_adult": 1, "w_child": 1, "elast_size": 0.5}
-SCALING = {"w_adult": 1, "w_child": 1, "elast_size": 0}
+SCALING = {"w_adult": 1, "w_child": 1, "elast_size": 1}
 EXCLUDING = ["neginc"]
 SCREENING = ["", ""]
 

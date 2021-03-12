@@ -45,6 +45,7 @@ def make_calculator(refdict = {}, year=2018):
 
 # Make the pre-TCJA and TCJA calculators
 year_to_use = 2018
+YEARLIST = [2019, 2023, 2027]
 param = Calculator.read_json_param_objects('taxcalc/reforms/2017_law.json', None)
 calc_pre = make_calculator(param['policy'], year_to_use)
 calc_tcja = make_calculator({}, year_to_use)
@@ -78,6 +79,7 @@ dshare = np.array(dshare1)
 wtshare = np.array(wtshare1)
 
 
+
 # Execute the necessary code for the business tax distribution
 exec(open('business_distribution_code.py').read())
 
@@ -108,7 +110,7 @@ if ownGrowthModel:
     exec(open('growthmodel.py').read())
 else:
     # Growth effect to consider (pct change in GDP level)
-    geffect = 0.0
+    geffect = 0.015
     # Construct alternative file for growth effect (permanent increase in 2018)
     growdiffs1 = np.zeros(13)
     growdiffs1[4] = geffect

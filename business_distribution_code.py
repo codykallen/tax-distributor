@@ -116,12 +116,11 @@ def hhEquityDistribution(calc1, equity, dshare, wtshare, ctaxch):
         e00600: total dividends
         p22250: short-term gains
         p23250: long-term gains
-        e01400: taxable IRA distributions
-            Note that this will be for the taxed windfall for indirect equity
         e00400: nontaxable interest income
             Note that this is for all equity not subject to tax:
                 Unrealized capital gains
                 Equity in accounts not taxed at withdrawal
+                Equity in accounts taxed at withdrawal, after withdrawal tax
     """
     wgt = calc1.array('s006')
     assert len(equity) == len(wgt)
@@ -148,10 +147,12 @@ def hhEquityDistribution(calc1, equity, dshare, wtshare, ctaxch):
     ctax_ltcg = ctax_direct * (1 - divshare) * cgsplit[1]
     ctax_urcg = ctax_direct * (1 - divshare) * (1 - cgsplit[0] - cgsplit[1])
     # Indirect tax burden
-    ctax_wt = ctax_tot * (1 - dshare) * wtshare
+    mtr_ira = sum(calc1.mtr('e01400',calc_all_already_called=True)[2] *
+                  calc1.array('e01400') * wgt) / sum(calc1.array('e01400') * wgt)
+    ctax_wt = ctax_tot * (1 - dshare) * wtshare * (1 - mtr_ira)
     ctax_wnt = ctax_tot * (1 - dshare) * (1 - wtshare)
     return (ctax_qdiv, ctax_qdiv + ctax_nqdiv,
-            ctax_stcg, ctax_ltcg, ctax_wt, ctax_urcg + ctax_wnt)
+            ctax_stcg, ctax_ltcg, ctax_wt + ctax_urcg + ctax_wnt)
 
 def applyBtaxDistribution(calcA, calcB, year, equity, dshare, wtshare,
                           npsplit, slgsplit,
@@ -180,8 +181,8 @@ def applyBtaxDistribution(calcA, calcB, year, equity, dshare, wtshare,
                                                      slgsplit)
     (qdiv_ch3, tdiv_ch3,
      stcg_ch3, ltcg_ch3,
-     tira_ch3, free_ch3) = hhEquityDistribution(calc1, equity2, dshare,
-                                                wtshare, ctaxchange)
+     free_ch3) = hhEquityDistribution(calc1, equity2, dshare,
+                                      wtshare, ctaxchange)
     # Update incomes in calc2
     calc2.incarray('mcaid_ben', np.array(ben_ch1 + ben_ch2))
     calc2.incarray('e00200p', np.array(comp_ch1 + comp_ch2))
@@ -192,7 +193,7 @@ def applyBtaxDistribution(calcA, calcB, year, equity, dshare, wtshare,
     calc2.incarray('e00600', np.array(tdiv_ch3))
     calc2.incarray('p22250', np.array(stcg_ch3))
     calc2.incarray('p23250', np.array(ltcg_ch3))
-    calc2.incarray('e01400', np.array(tira_ch3))
+    #calc2.incarray('e01400', np.array(tira_ch3))
     calc2.incarray('e00400', np.array(free_ch3))
     calc2.calc_all()
     # Produce the distributional comparison
@@ -248,3 +249,81 @@ def fullDistComparison(calcA, calcB, year, equity, dshare, wtshare,
     iit_table["Both, average"] = all_table["Average ($)"]
     return iit_table
 
+
+def equityDistribution(eq, deqsh, calc1, rerankby, rescaleby,
+                       exclude, screen):
+    """
+    Function to build distribution table for
+    equity, directly held equity, dividends,
+    and dividends + capital gains.
+    Returns distribution table.
+    """
+    # Arrays of measures to use
+    equityA = np.array(eq)
+    dequityA = np.array(deqsh) * equityA
+    divA = calc1.array('e00600')
+    divcgA = divA + calc1.array('p22250') + calc1.array('p23250')
+    # Arrays of measures for sorting
+    incA = getIncome(calc1, 'expanded')
+    wgtA = calc1.array('s006')
+    (rankA, scaleA) = getRankScale(calc1, rerankby, rescaleby)
+    todropA = getExclude(calc1, exclude, 'expanded')
+    screenA = getScreen(calc1, screen)
+    ## Rescale incomes and order units by income
+    inc_rescaled= incA / rankA
+    ziplist = sorted(zip(inc_rescaled, equityA, dequityA, divA, divcgA,
+                         wgtA, rankA, scaleA, screenA, todropA))
+    (incB, equityB, dequityB, divB, divcgB, wgtB, rankB, scaleB, screenB, todropB) = zip(*ziplist)
+    ## Store as arrays and apply weights
+    incC = np.array(incB) * np.array(rankB)
+    wgtC = np.array(wgtB) * np.array(scaleB)
+    equityC = np.array(equityB)
+    dequityC = np.array(dequityB)
+    divC = np.array(divB)
+    divcgC = np.array(divcgB)
+    screenC = np.array(screenB)
+    todropC = np.array(todropB)
+    # Remove excluded units and calculate cumulative weight of others
+    wgtD = np.where(todropC == 1, 0, wgtC)
+    cumwgtD = np.cumsum(wgtD) / sum(wgtD)
+    cumwgtD = np.where(todropC == 1, 99, cumwgtD)
+    # Retain cumulative weights but drop observations not included in screen
+    incE = incC[screenC == 1]
+    wgtE = wgtC[screenC == 1]
+    cumwgtE = cumwgtD[screenC == 1]
+    equityE = equityC[screenC == 1]
+    dequityE = dequityC[screenC == 1]
+    divE = divC[screenC == 1]
+    divcgE = divcgC[screenC == 1]
+    # Identify the bin for each observation
+    groupid = np.zeros(len(incE)) # bottom decile
+    groupid = np.where(cumwgtE >= 0.1, 1, groupid) # second decile
+    groupid = np.where(cumwgtE >= 0.2, 2, groupid) # third decile
+    groupid = np.where(cumwgtE >= 0.3, 3, groupid) # fourth decile
+    groupid = np.where(cumwgtE >= 0.4, 4, groupid) # fifth decile
+    groupid = np.where(cumwgtE >= 0.5, 5, groupid) # sixth decile
+    groupid = np.where(cumwgtE >= 0.6, 6, groupid) # seventh decile
+    groupid = np.where(cumwgtE >= 0.7, 7, groupid) # eighth decile
+    groupid = np.where(cumwgtE >= 0.8, 8, groupid) # ninth decile
+    groupid = np.where(cumwgtE >= 0.9, 9, groupid) # 90-95
+    groupid = np.where(cumwgtE >= 0.95, 10, groupid) # 95-99
+    groupid = np.where(cumwgtE >= 0.99, 11, groupid) # top 1%
+    groupid = np.where(cumwgtE == 99, 99, groupid) # excluded individuals
+    # Arrays to store shares
+    equityF = np.zeros(12)
+    dequityF = np.zeros(12)
+    divF = np.zeros(12)
+    divcgF = np.zeros(12)
+    # Compute shares for each income group
+    for i in range(12):
+        equityF[i] = sum(equityE[groupid==i] * wgtE[groupid==i]) / sum(equityE * wgtE)
+        dequityF[i] = sum(dequityE[groupid==i] * wgtE[groupid==i]) / sum(dequityE * wgtE)
+        divF[i] = sum(divE[groupid==i] * wgtE[groupid==i]) / sum(divE * wgtE)
+        divcgF[i] = sum(divcgE[groupid==i] * wgtE[groupid==i]) / sum(divcgE * wgtE)
+    rowlabel = ['Bottom decile', 'Second decile', 'Third decile', 'Fourth decile',
+                'Fifth decile', 'Sixth decile', 'Seventh decile', 'Eighth decile',
+                'Ninth decile', 'Next 5%', 'Next 4%', 'Top 1%']
+    table1 = pd.DataFrame({"Income group": rowlabel,
+                           "Equity": equityF, "Direct equity": dequityF,
+                           "Dividends": divF, "Dividends + CapGains": divcgF})
+    return table1
