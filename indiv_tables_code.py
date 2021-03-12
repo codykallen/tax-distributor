@@ -20,10 +20,10 @@ Section 1: Main distributional analysis for each year
 calc1 = copy.deepcopy(calc_pre)
 calc2 = copy.deepcopy(calc_tcja)
 
-for year in range(2018, 2028):
+for year in YEARLIST:
     calc1.advance_to_year(year)
-    calc2.calc_all()
-    calc1.advance_to_year(year)
+    calc1.calc_all()
+    calc2.advance_to_year(year)
     calc2.calc_all()
     tableL = levelTable_km(calc1, calc2, RANKING, SCALING, EXCLUDING,
                            SCREENING)
@@ -41,7 +41,7 @@ rowlabel = ['Bottom decile', 'Second decile', 'Third decile', 'Fourth decile',
 """
 Section 2: Sensitivity to equivalence scales
 """
-scaling = {"w_adult": 1, "w_child": 1, "elast_size": 0}
+scaling = {"w_adult": 1, "w_child": 1, "elast_size": 1}
 excluding = ["neginc"]
 screening = ["", ""]
 ranking1 = {"w_adult": 1, "w_child": 1, "elast_size": 0}
@@ -259,16 +259,16 @@ totalinc_post2 = distTable_km(calc_pre, calc_tcja, 'agi',
 avgrate_pre2 = totaltax_pre2 / totalinc_pre2 * 100
 avgrate_post2 = totaltax_post2 / totalinc_post2 * 100
 # Pre-tax, pre-benefit income
-totaltax_pre3 = distTable_km(calc_pre, calc_tcja, 'nobenefits',
+totaltax_pre3 = distTable_km(calc_pre, calc_tcja, 'market',
                              'totaltax', 'total1',
                              ranking, scaling, excluding, screening)
-totaltax_post3 = distTable_km(calc_pre, calc_tcja, 'nobenefits',
+totaltax_post3 = distTable_km(calc_pre, calc_tcja, 'market',
                               'totaltax', 'total2',
                               ranking, scaling, excluding, screening)
-totalinc_pre3 = distTable_km(calc_pre, calc_tcja, 'nobenefits',
+totalinc_pre3 = distTable_km(calc_pre, calc_tcja, 'market',
                              'expanded_income', 'total1',
                              ranking, scaling, excluding, screening)
-totalinc_post3 = distTable_km(calc_pre, calc_tcja, 'nobenefits',
+totalinc_post3 = distTable_km(calc_pre, calc_tcja, 'market',
                               'expanded_income', 'total2',
                               ranking, scaling, excluding, screening)
 avgrate_pre3 = totaltax_pre3 / totalinc_pre3 * 100
@@ -406,13 +406,13 @@ tableD_3pluskids.to_csv('indiv_dist_tables/tableD_3pluskids.csv', index=False)
 """
 Section 7: Sensitivity of Kakwani index
 """
-scaling_options = ['Weight by size', 'Weight by square root', 'Adults']
+scaling_options = ['Tax unit', 'Weight by square root', 'Adults']
 ranking_options = ['None', 'Size', 'Oxford', 'OECD']
 excluding_options = ['Dependents', 'Incomplete units', 'Tax > Income']
 income_options = []
 rowlabels = ["Main estimates", "Using different equivalence scales",
              "None", "Size of tax unit", "Oxford", "OECD-modified",
-             "Using different weighting systems", "Size of tax unit",
+             "Using different weighting systems", "Tax unit",
              "Square root of size", "Number of adults",
              "Using different income measures", "AGI", "Market income",
              "Excluding different groups", "Dependents", "Incomplete units",
@@ -450,7 +450,7 @@ for y in year_options:
     reslist.append(0)
     # Alternative weighting options
     reslist.append(kakwani(calcA, calcB, 'expanded', 'totaltax', ranking_main,
-                           {"w_adult": 1, "w_child": 1, "elast_size": 1},
+                           {"w_adult": 1, "w_child": 1, "elast_size": 0},
                            ["neginc"]))
     reslist.append(kakwani(calcA, calcB, 'expanded', 'totaltax', ranking_main,
                            {"w_adult": 1, "w_child": 1, "elast_size": 0.5},
@@ -462,7 +462,7 @@ for y in year_options:
     # Alternative income measures
     reslist.append(kakwani(calcA, calcB, 'agi', 'totaltax', ranking_main,
                            scaling_main, ["neginc"]))
-    reslist.append(kakwani(calcA, calcB, 'nobenefits', 'totaltax',
+    reslist.append(kakwani(calcA, calcB, 'market', 'totaltax',
                            ranking_main, scaling_main, ["neginc"]))
     reslist.append(0)
     # Alternative excluded groups

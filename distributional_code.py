@@ -104,16 +104,17 @@ def getIncome(calc, income):
         "agi": adjusted gross income
         "nobenefits": expanded income less government benefits
     """
-    assert income in ["expanded", "agi", "aftertax", "nobenefits"]
+    assert income in ["expanded", "agi", "aftertax", "market"]
     if income == "expanded":
         inc = calc.array('expanded_income')
     elif income == "agi":
         inc = calc.array('c00100')
     elif income == "aftertax":
         inc = calc.array('aftertax_income')
-    elif income == "nobenefits":
+    elif income == "market":
         inc = (calc.array('expanded_income') - 
-               calc.array('benefit_value_total'))
+               calc.array('benefit_value_total') -
+               calc.array('e00700'))
     return inc
 
 def getMeasures(calc1, calc2, measure):
@@ -390,7 +391,6 @@ def distOrderPrep(calc1, calc2, income, measure, rerankby, rescaleby,
     """
     This function prepares all of the relevant measures. It performs the
     following tasks:
-        - Checks values for inputs
         - Removes observations per the "exclude" requirement
         - Orders the units by income measure, including reranking
         - Adjust the unit weights for scaling measure
@@ -421,7 +421,7 @@ def distOrderPrep(calc1, calc2, income, measure, rerankby, rescaleby,
     wgtD = np.where(todropC == 1, 0, wgtC)
     cumwgtD = np.cumsum(wgtD) / sum(wgtD)
     cumwgtD = np.where(todropC == 1, 99, cumwgtD)
-    ## Retain cumulative weights but drop observations not included in screen
+    # Retain cumulative weights but drop observations not included in screen
     incE = incC[screenC == 1]
     wgtE = wgtC[screenC == 1]
     cumwgtE = cumwgtD[screenC == 1]

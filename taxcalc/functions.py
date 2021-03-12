@@ -1842,7 +1842,7 @@ def LumpSumTax(DSI, num, XTOT,
 @iterate_jit(nopython=True)
 def ExpandIncome(e00200, pencon_p, pencon_s, e00300, e00400, e00600,
                  e00700, e00800, e00900, e01100, e01200, e01400, e01500,
-                 e02000, e02100, p22250, p23250,
+                 e02000, e02100, p22250, p23250, e03500,
                  cmbtp, ptax_was, benefit_value_total, ubi,
                  expanded_income):
     """
@@ -1856,7 +1856,8 @@ def ExpandIncome(e00200, pencon_p, pencon_s, e00300, e00400, e00600,
         e00400 +  # non-taxable interest income
         e00600 +  # dividends
         e00700 +  # state and local income tax refunds
-        e00800 +  # alimony received
+        #e00800 +  # alimony received
+        e00800 - e03500 +  # alimony received less alimony paid
         e00900 +  # Sch C business net income/loss
         e01100 +  # capital gain distributions not reported on Sch D
         e01200 +  # Form 4797 other net gain/loss
